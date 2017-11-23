@@ -1,18 +1,19 @@
 module Main exposing (..)
 
 import Html exposing (Html, div, text, program)
+import Ports exposing (InfoForElm(..))
 
 
 -- MODEL
 
 
 type alias Model =
-    String
+    { message : String }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( "Hello", Cmd.none )
+    { message = "None" } ! []
 
 
 
@@ -21,6 +22,7 @@ init =
 
 type Msg
     = NoOp
+    | InfoFromOutside InfoForElm
 
 
 
@@ -30,7 +32,7 @@ type Msg
 view : Model -> Html Msg
 view model =
     div []
-        [ text model ]
+        [ text model.message ]
 
 
 
@@ -41,7 +43,12 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
-            ( model, Cmd.none )
+            model ! []
+
+        InfoFromOutside infoForElm ->
+            case Debug.log "infoForElm" infoForElm of
+                StuffReceived message ->
+                    { model | message = message } ! []
 
 
 
@@ -50,7 +57,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Ports.getInfoFromOutside InfoFromOutside (always NoOp)
 
 
 
