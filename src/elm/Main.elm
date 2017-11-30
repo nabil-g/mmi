@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html, div, text, program)
 import Ports exposing (InfoForElm(..))
+import Time exposing (Time, second)
 
 
 -- MODEL
@@ -23,6 +24,7 @@ init =
 type Msg
     = NoOp
     | InfoFromOutside InfoForElm
+    | Tick Time
 
 
 
@@ -50,6 +52,9 @@ update msg model =
                 StuffReceived message ->
                     { model | message = message } ! []
 
+        Tick newTime ->
+            model ! [ fetchData ]
+
 
 
 -- SUBSCRIPTIONS
@@ -57,7 +62,10 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Ports.getInfoFromOutside InfoFromOutside (always NoOp)
+    Sub.batch
+        [ Time.every (5 * second) Tick
+        , Ports.getInfoFromOutside InfoFromOutside (always NoOp)
+        ]
 
 
 
