@@ -2,6 +2,9 @@ var express = require('express')
 var bodyParser = require('body-parser')
 var app = express()
 var mysql = require('mysql')
+const { buildSchema } = require('graphql');
+const graphqlHTTP = require('express-graphql');
+const schema = require('./schema.js');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -21,6 +24,25 @@ connection.connect(function(err) {
   console.log('You are now connected...')
 })
 
+//
+// let schema = buildSchema(`
+//   type Query {
+//     postTitle: String,
+//     blogTitle: String
+//   }
+// `);
+//
+// // Root provides a resolver function for each API endpoint
+// let root = {
+//   postTitle: () => {
+//     return 'Build a Simple GraphQL Server With Express and NodeJS';
+//   },
+//   blogTitle: () => {
+//     return 'scotch.io';
+//   }
+// };
+
+
 app.get('/', function(req, res, next) {
   res.json({ message: 'fst' });
 });
@@ -37,6 +59,13 @@ var sql = "INSERT INTO orders (amount) VALUES ("+amount+")";
   });
 
 });
+
+
+app.use('/graphql', graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: true //Set to false if you don't want graphiql enabled
+}));
 
 
 app.listen(3003, function() {

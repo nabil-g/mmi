@@ -3,9 +3,7 @@ module Main exposing (..)
 import Html exposing (Html, div, text, program)
 import Ports exposing (InfoForElm(..))
 import Time exposing (Time, second)
-
-
--- MODEL
+import Task
 
 
 type alias Model =
@@ -53,7 +51,14 @@ update msg model =
                     { model | message = message } ! []
 
         Tick newTime ->
-            model ! [ fetchData ]
+            model ! [ fetchDataCmd ]
+
+
+fetchDataCmd : Cmd Msg
+fetchDataCmd =
+    fetchData {}
+        |> sendQueryRequest
+        |> Task.attempt (RemoteData.fromResult >> ReceiveQueryResponse)
 
 
 

@@ -1,0 +1,37 @@
+{
+  "name": "mmi",
+  "description": "Magic mirror",
+  "version": "0.0.1",
+  "author": "dway8",
+  "license": "ISC",
+   "devDependencies": {
+    "elm": "^0.18.0",
+    "elm-hot-loader": "^0.5.4",
+    "elm-webpack-loader": "^4.4.0",
+    "eslint": "^4.3.0",
+    "eslint_d": "^5.0.0",
+    "glob": "^5.0.14",
+    "prettier": "^1.5.3",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4",
+    "webpack-merge": "^4.1.1"
+  },
+
+ "scripts": {
+    "updateDeps": "yarn autoclean --force && yarn install",
+    "build": "webpack --progress --config webpack.config.js",
+    "watch": "webpack --config webpack.config.js --watch",
+    "dev": "webpack-dev-server --hot --inline --config webpack.config.js --port 3002 --host 0.0.0.0 --public 0.0.0.0:3002",
+    "hook-install": "prepush install",
+    "hook-remove": "prepush remove",
+    "package": "elm-package install -y",
+    "start": "yarn dev",
+    "prettify": "prettier --write --trailing-comma es5 --tab-width 4 'front/**/*.js' '*.js'",
+    "lint": "eslint_d --fix 'front/**/*.js' '*.js'",
+    "elm:install": "elm-package install --yes",
+    "elm:reinstall": "rm -rf elm-stuff/; yarn elm:install",
+    "preupdateDeps": "rm -rf node_modules/",
+    "postinstall": "yarn elm:install; mv node_modules/.bin/elm-make node_modules/.bin/elm-make-original; cp elm-make node_modules/.bin/"
+  }
+}
+
