@@ -5,49 +5,51 @@ let {
   GraphQLString,
   GraphQLList,
   GraphQLInt,
+  GraphQLID,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLSchema,
 } = require('graphql');
 
-const MybDataType = new GraphQLObjectType({
+const MybData = new GraphQLObjectType({
   name: "myb_data",
   description: "This represents myb data",
   fields: () => ({
-    countOrders: {type: GraphQLInt},
+    countOrders: {type: GraphQLInt}
   })
 });
 
 // Root Query
-const MmiQueryRootType = new GraphQLObjectType({
-  name: 'MmiAppSchema',
+const Query = new GraphQLObjectType({
+  name: 'Query',
   description: "Mmi Application Schema Query Root",
   fields: () => ({
     myb_data: {
-      type: MybDataType,
-      description: "All myb data",
-      resolve: resolveMybData
+      type: MybData,
+      resolve: (_, args) => {
+        return resolveMybData().then(value => value[0]);
+      },
     }
   })
 });
 
 // schema declaration
-const MmiAppSchema = new GraphQLSchema({
-  query: MmiQueryRootType
+const Schema = new GraphQLSchema({
+  query: Query
  });
 
 
 // resolver
 
-function resolveMybData(rootValue){
-  db.query('SELECT countOrders FROM myb_data ORDER BY ID DESC LIMIT 1;', function(err, rows, fields) {
-    if (!err) {
-      console.log('Result is: ', JSON.stringify(rows[0]));
-      return rows[0];
-    }
-    else
-      console.log('Error while performing Query.');
+function resolveMybData(){
+return new Promise((resolve, reject) => {
+    let sql = 'SELECT countOrders FROM myb_data ORDER BY ID DESC LIMIT 1';
+    // sql = mysql.format(sql, [id]);
+    db.query(sql, (err, results) => {
+      if (err) reject(err);
+      resolve(results);
+    });
   });
  }
 
-module.exports = MmiAppSchema;
+module.exports = Schema;

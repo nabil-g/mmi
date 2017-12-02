@@ -75,7 +75,7 @@ update msg model =
                 model ! [ fetchDataCmd ]
 
         ReceiveQueryResponse response ->
-            { model | mybData = response } ! []
+            { model | mybData = Debug.log "response" response } ! []
 
 
 fetchDataCmd : Cmd Msg

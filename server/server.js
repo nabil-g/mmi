@@ -46,7 +46,7 @@ var sql = "INSERT INTO orders (amount) VALUES ("+amount+")";
 
 app.use('/graphql', graphqlHTTP({
   schema: schema,
-  rootValue: root,
+  rootValue: global,
   graphiql: true
 }));
 
