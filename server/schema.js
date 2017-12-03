@@ -2,9 +2,8 @@ var db = require("./db.js");
 
 let {
     GraphQLString,
-    GraphQLList,
     GraphQLInt,
-    GraphQLID,
+    GraphQLFloat,
     GraphQLObjectType,
     GraphQLNonNull,
     GraphQLSchema,
@@ -15,6 +14,8 @@ const MybData = new GraphQLObjectType({
     description: "This represents myb data",
     fields: () => ({
         countOrders: { type: GraphQLInt },
+        avgCart: { type: GraphQLFloat },
+        va: { type: GraphQLInt },
         countUsers: { type: GraphQLInt },
         prodEvents: { type: GraphQLInt },
     }),

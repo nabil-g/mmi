@@ -34,35 +34,47 @@ app.post("/mmi", function(req, res, next) {
     console.log("req", params);
 
     if (params.new_user) {
-        var result = getData()
-            .then(function(rows) {
-                var lastRow = rows[0];
-                var countUsers = lastRow.countUsers;
-                console.log("count", countUsers);
+        var result = getLastData()
+            .then(function(lastRow) {
                 var newData = {
                     countOrders: lastRow.countOrders,
                     countUsers: lastRow.countUsers + parseInt(params.new_user),
                 };
+                insertNewData(newData);
+            })
+            .catch(e => console.log(e));
+    } else if (params.new_order && params.amount) {
+        var result = getLastData()
+            .then(function(lastRow) {
+                var newCountOrders = lastRow.countOrders + 1;
+                var newVa = lastRow.va + parseFloat(params.amount);
+                var newData = {
+                    countOrders: newCountOrders,
+                    countUsers: lastRow.countUsers,
+                    va: newVa,
+                    avgCart: newVa / newCountOrders,
+                    prodEvents: lastRow.prodEvents,
+                };
 
-                db.query(
-                    "INSERT INTO myb_data SET ?",
-                    newData,
-                    (err, results) => {
-                        if (err) console.log("err", err);
-                        console.log("1 row inserted");
-                    }
-                );
+                insertNewData(newData);
             })
             .catch(e => console.log(e));
     }
 });
 
-function getData() {
+function insertNewData(newData) {
+    db.query("INSERT INTO myb_data SET ?", newData, (err, results) => {
+        if (err) console.log("err", err);
+        console.log("1 row inserted");
+    });
+}
+
+function getLastData() {
     return new Promise((resolve, reject) => {
         let sql = "SELECT * FROM myb_data ORDER BY ID DESC LIMIT 1";
         db.query(sql, (err, results) => {
             if (err) reject(err);
-            resolve(results);
+            resolve(results[0]);
         });
     });
 }
