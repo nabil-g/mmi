@@ -1,5 +1,5 @@
 var Elm = require( '../elm/Main' );
-var app = Elm.Main.embed( document.getElementById( 'main' ) ,  window.options);
+var app = Elm.Main.fullscreen(window.options);
 
 app.ports.infoForOutside.subscribe(function(elmData) {
     var tag = elmData.tag;
