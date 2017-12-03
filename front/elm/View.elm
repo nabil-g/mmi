@@ -10,7 +10,13 @@ view model =
     case model.mybData of
         Success data ->
             div []
-                [ text <| "Nombre de commandes : " ++ toString data.countOrders ]
+                [ div []
+                    [ text <| "Nombre de commandes : " ++ toString data.countOrders ]
+                , div []
+                    [ text <| "Nombre d'inscrits : " ++ toString data.countUsers ]
+                , div []
+                    [ text <| "Manifs en prod : " ++ toString data.prodEvents ]
+                ]
 
         _ ->
             text "Chargement..."

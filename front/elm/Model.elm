@@ -17,7 +17,10 @@ type alias GraphQLData a =
 
 
 type alias MybData =
-    { countOrders : Int }
+    { countOrders : Int
+    , countUsers : Int
+    , prodEvents : Int
+    }
 
 
 
@@ -71,6 +74,8 @@ fetchData =
             []
             (object MybData
                 |> with (field "countOrders" [] int)
+                |> with (field "countUsers" [] int)
+                |> with (field "prodEvents" [] int)
             )
         )
         |> queryDocument
