@@ -36,9 +36,22 @@ app.post("/mmi", function(req, res, next) {
     if (params.new_user) {
         var result = getData()
             .then(function(rows) {
-                var result = rows[0];
-                var countUsers = result.countUsers;
+                var lastRow = rows[0];
+                var countUsers = lastRow.countUsers;
                 console.log("count", countUsers);
+                var newData = {
+                    countOrders: lastRow.countOrders,
+                    countUsers: lastRow.countUsers + parseInt(params.new_user),
+                };
+
+                db.query(
+                    "INSERT INTO myb_data SET ?",
+                    newData,
+                    (err, results) => {
+                        if (err) console.log("err", err);
+                        console.log("1 row inserted");
+                    }
+                );
             })
             .catch(e => console.log(e));
     }
