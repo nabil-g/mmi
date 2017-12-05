@@ -37,10 +37,9 @@ app.post("/mmi", function(req, res, next) {
         var result = getLastData()
             .then(function(lastRow) {
                 var newData = {
-                    countOrders: lastRow.countOrders,
                     countUsers: lastRow.countUsers + parseInt(params.new_user),
                 };
-                insertNewData(newData);
+                updateTodayData(newData, lastRow.id);
             })
             .catch(e => console.log(e));
     } else if (params.new_order && params.amount) {
@@ -48,30 +47,57 @@ app.post("/mmi", function(req, res, next) {
             .then(function(lastRow) {
                 var newCountOrders = lastRow.countOrders + 1;
                 var newVa = lastRow.va + parseFloat(params.amount);
+                var newAvgCart = newVa / newCountOrders;
                 var newData = {
                     countOrders: newCountOrders,
-                    countUsers: lastRow.countUsers,
                     va: newVa,
-                    avgCart: newVa / newCountOrders,
-                    prodEvents: lastRow.prodEvents,
+                    avgCart: newAvgCart,
                 };
 
-                insertNewData(newData);
+                var today = new Date().setHours(0, 0, 0, 0);
+                var lastRowDate = new Date(lastRow.createdAt).setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+                if (lastRowDate < today) {
+                    console.log("no insertion yet for today");
+                    // no insertion yet for today
+                    newData.countUsers = lastRow.countUsers;
+                    newData.prodEvents = lastRow.prodEvents;
+                    insertNewData(newData);
+                } else {
+                    updateTodayData(newData, lastRow.id);
+                }
             })
             .catch(e => console.log(e));
     }
 });
 
+function updateTodayData(newData, id) {
+    db.query(
+        "UPDATE myb_data SET ? WHERE id= ?",
+        [newData, id],
+        (err, results) => {
+            if (err) console.log("err", err);
+            console.log("Today data updated");
+        }
+    );
+}
+
 function insertNewData(newData) {
     db.query("INSERT INTO myb_data SET ?", newData, (err, results) => {
         if (err) console.log("err", err);
-        console.log("1 row inserted");
+        console.log("New today data inserted");
     });
 }
 
 function getLastData() {
     return new Promise((resolve, reject) => {
-        let sql = "SELECT * FROM myb_data ORDER BY ID DESC LIMIT 1";
+        let sql =
+            "SELECT id, countOrders, prodEvents, avgCart, va, DATE(createdAt) as createdAt FROM myb_data  ORDER BY ID DESC LIMIT 1;";
         db.query(sql, (err, results) => {
             if (err) reject(err);
             resolve(results[0]);

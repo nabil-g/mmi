@@ -14,6 +14,12 @@ const MybData = new GraphQLObjectType({
     description: "This represents myb data",
     fields: () => ({
         countOrders: { type: GraphQLInt },
+        todayOrders: {
+            type: GraphQLInt,
+            resolve: (root, args) => {
+                return root.countOrders;
+            },
+        },
         avgCart: { type: GraphQLFloat },
         va: { type: GraphQLInt },
         countUsers: { type: GraphQLInt },
