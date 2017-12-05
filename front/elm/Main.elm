@@ -2,7 +2,8 @@ module Main exposing (..)
 
 import Html exposing (program)
 import Ports exposing (InfoForElm(..))
-import Time exposing (Time, second)
+import Time exposing (Time, second, minute)
+import Task
 import RemoteData exposing (RemoteData(..))
 import View exposing (view)
 import Model exposing (Msg(..), fetchDataCmd, Model, update)
@@ -20,12 +21,16 @@ main =
 
 init : ( Model, Cmd Msg )
 init =
-    { mybData = NotAsked } ! [ fetchDataCmd ]
+    { mybData = NotAsked
+    , datetime = Nothing
+    }
+        ! [ fetchDataCmd, Task.perform UpdateDateTime Time.now ]
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Time.every (10 * second) Tick
+        [ Time.every (10 * second) <| always FetchData
         , Ports.getInfoFromOutside InfoFromOutside (always NoOp)
+        , Time.every minute UpdateDateTime
         ]

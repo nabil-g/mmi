@@ -1,7 +1,8 @@
 module Model exposing (..)
 
 import Ports exposing (InfoForElm(..))
-import Time exposing (Time, second)
+import Time exposing (Time, second, minute)
+import Date exposing (Date, fromTime)
 import Task exposing (Task)
 import GraphQL.Request.Builder exposing (..)
 import GraphQL.Client.Http as GraphQLClient
@@ -9,7 +10,9 @@ import RemoteData exposing (RemoteData(..))
 
 
 type alias Model =
-    { mybData : GraphQLData MybData }
+    { mybData : GraphQLData MybData
+    , datetime : Maybe Date
+    }
 
 
 type alias GraphQLData a =
@@ -32,7 +35,8 @@ type alias MybData =
 type Msg
     = NoOp
     | InfoFromOutside InfoForElm
-    | Tick Time
+    | FetchData
+    | UpdateDateTime Time
     | ReceiveQueryResponse (GraphQLData MybData)
 
 
@@ -51,12 +55,11 @@ update msg model =
                 StuffReceived message ->
                     model ! []
 
-        Tick newTime ->
-            let
-                debug =
-                    Debug.log "newTime"
-            in
-                model ! [ fetchDataCmd ]
+        FetchData ->
+            model ! [ fetchDataCmd ]
+
+        UpdateDateTime time ->
+            { model | datetime = Just <| fromTime time } ! []
 
         ReceiveQueryResponse response ->
             { model | mybData = Debug.log "response" response } ! []
