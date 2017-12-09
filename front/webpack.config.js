@@ -6,7 +6,7 @@ var autoprefixer = require("autoprefixer");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
 var entryPath = path.join(__dirname, "./static/index.js");
-var outputPath = path.join(__dirname, "dist");
+var outputPath = path.resolve(__dirname + "/dist");
 
 console.log("WEBPACK GO!");
 
@@ -20,8 +20,8 @@ var outputFilename = "appmmi.js";
 var commonConfig = {
     output: {
         path: outputPath,
-        filename: `./static/js/${outputFilename}`,
-        // publicPath: '/'
+        filename: outputFilename,
+        publicPath: "http://localhost:3002/",
     },
 
     resolve: {
