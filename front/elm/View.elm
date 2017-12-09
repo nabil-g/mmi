@@ -23,16 +23,24 @@ view model =
                                 [ spacing 15 ]
                                 [ el S.None
                                     []
-                                    (text <| "Nombre de commandes : " ++ toString data.countOrders)
+                                  <|
+                                    row S.None
+                                        [ spacing 15 ]
+                                        [ text <| "Nombre de commandes : " ++ toString data.countOrders
+                                        , text <| " - " ++ toString data.todayOrders ++ " aujourd'hui"
+                                        ]
                                 , el S.None
                                     []
                                     (text <| "Panier moyen : " ++ toString data.avgCart ++ " €")
                                 , el S.None
                                     []
                                     (text <| "Volume d'affaire : " ++ toString data.va ++ " €")
-                                , el S.None
-                                    []
-                                    (text <| "Nombre d'inscrits : " ++ toString data.countUsers)
+                                , el S.None [] <|
+                                    row S.None
+                                        [ spacing 15 ]
+                                        [ text <| "Nombre d'inscrits : " ++ toString data.countUsers
+                                        , text <| " - " ++ toString data.todayUsers ++ " aujourd'hui"
+                                        ]
                                 , el S.None
                                     []
                                     (text <| "Manifs en prod : " ++ toString data.prodEvents)

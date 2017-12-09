@@ -25,6 +25,7 @@ type alias MybData =
     , avgCart : Float
     , va : Int
     , countUsers : Int
+    , todayUsers : Int
     , prodEvents : Int
     }
 
@@ -84,6 +85,7 @@ fetchData =
                 |> with (field "avgCart" [] float)
                 |> with (field "va" [] int)
                 |> with (field "countUsers" [] int)
+                |> with (field "todayUsers" [] int)
                 |> with (field "prodEvents" [] int)
             )
         )
