@@ -7,11 +7,26 @@ import Task exposing (Task)
 import GraphQL.Request.Builder exposing (..)
 import GraphQL.Client.Http as GraphQLClient
 import RemoteData exposing (RemoteData(..))
+import Json.Decode.Pipeline as P
+import Json.Decode as D
+import Http
 
 
 type alias Model =
     { mybData : GraphQLData MybData
     , datetime : Maybe Date
+    , weather : Weather
+    }
+
+
+type alias Weather =
+    { currently : CurrentWeather }
+
+
+type alias CurrentWeather =
+    { icon : String
+    , summary : String
+    , temperature : Float
     }
 
 
@@ -37,9 +52,11 @@ type alias MybData =
 type Msg
     = NoOp
     | InfoFromOutside InfoForElm
-    | FetchData
+    | FetchMybData
     | UpdateDateTime Time
     | ReceiveQueryResponse (GraphQLData MybData)
+    | FetchWeather
+    | ReceiveWeather (Result Http.Error Weather)
 
 
 
@@ -57,8 +74,8 @@ update msg model =
                 StuffReceived message ->
                     model ! []
 
-        FetchData ->
-            model ! [ fetchDataCmd ]
+        FetchMybData ->
+            model ! [ fetchMybDataCmd ]
 
         UpdateDateTime time ->
             { model | datetime = Just <| fromTime time } ! []
@@ -66,16 +83,35 @@ update msg model =
         ReceiveQueryResponse response ->
             { model | mybData = Debug.log "response" response } ! []
 
+        FetchWeather ->
+            model ! [ fetchWeather ]
 
-fetchDataCmd : Cmd Msg
-fetchDataCmd =
-    fetchData
+        ReceiveWeather response ->
+            case response of
+                Ok w ->
+                    { model | weather = { currently = w.currently } } ! []
+
+                Err e ->
+                    Debug.log "ERROR when fetching weather"
+                        model
+                        ! []
+
+
+fetchWeather : Cmd Msg
+fetchWeather =
+    Http.get "http://localhost:5051/forecast/45.7701213,4.829064300000027?lang=fr&units=si&exclude=minutely,alerts,flags" decodeWeather
+        |> Http.send ReceiveWeather
+
+
+fetchMybDataCmd : Cmd Msg
+fetchMybDataCmd =
+    fetchMybData
         |> sendQueryRequest
         |> Task.attempt (RemoteData.fromResult >> ReceiveQueryResponse)
 
 
-fetchData : Request Query MybData
-fetchData =
+fetchMybData : Request Query MybData
+fetchMybData =
     extract
         (field "myb_data"
             []
@@ -96,3 +132,17 @@ fetchData =
 sendQueryRequest : Request Query a -> Task GraphQLClient.Error a
 sendQueryRequest request =
     GraphQLClient.sendQuery "http://localhost:3003/graphql" request
+
+
+decodeWeather : D.Decoder Weather
+decodeWeather =
+    P.decode Weather
+        |> P.required "currently" decodeWeatherCurrently
+
+
+decodeWeatherCurrently : D.Decoder CurrentWeather
+decodeWeatherCurrently =
+    P.decode CurrentWeather
+        |> P.required "icon" D.string
+        |> P.required "summary" D.string
+        |> P.required "temperature" D.float

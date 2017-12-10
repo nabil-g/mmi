@@ -9,6 +9,10 @@
     "express-ws": "^3.0.0",
     "graphql": "^0.11.7",
     "node-mysql": "^0.4.2",
-    "prettier": "^1.5.3"
+    "prettier": "^1.5.3",
+    "axios": "^0.16.2",
+    "dotenv": "^4.0.0",
+    "paperplane": "^0.5.1",
+    "ramda": "^0.24.1"
   }
 }

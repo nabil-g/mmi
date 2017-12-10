@@ -2,6 +2,7 @@ var path = require("path");
 var webpack = require("webpack");
 var merge = require("webpack-merge");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
+var CopyWebpackPlugin = require("copy-webpack-plugin");
 var autoprefixer = require("autoprefixer");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
@@ -44,6 +45,9 @@ var commonConfig = {
             inject: "body",
             filename: "index.html",
         }),
+        new CopyWebpackPlugin([
+       { from: './static/climacons', to: 'img' }
+     ])
     ],
 
     postcss: [autoprefixer({ browsers: ["last 2 versions"] })],

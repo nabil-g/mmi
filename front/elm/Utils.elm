@@ -4,12 +4,13 @@ import Date exposing (Date)
 import Date.Extra.Format as DEF
 import Date.Extra.Config as DEC
 import Date.Extra.Config.Config_fr_fr as DECFR
+import Char
 
 
-dateToStringFr : Date -> String
-dateToStringFr date =
+dayAndMonth : Date -> String
+dayAndMonth date =
     formatFrench
-        ("%A %e %B %Y ")
+        ("%e %B")
         date
 
 
@@ -17,6 +18,13 @@ timeToStringFr : Date -> String
 timeToStringFr date =
     formatFrench
         ("%-H:%M")
+        date
+
+
+dayOfWeek : Date -> String
+dayOfWeek date =
+    formatFrench
+        ("%A")
         date
 
 
@@ -34,3 +42,13 @@ formatFrench format date =
 formatConfigFrench : DEC.Config
 formatConfigFrench =
     DECFR.config
+
+
+ucfirst : String -> String
+ucfirst string =
+    case String.uncons string of
+        Just ( firstLetter, rest ) ->
+            String.cons (Char.toUpper firstLetter) rest
+
+        Nothing ->
+            ""

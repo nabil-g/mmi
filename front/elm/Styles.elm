@@ -14,18 +14,24 @@ type Styles
 
 type Variations
     = Large
+    | Largest
+    | Bold
+    | Light
 
 
 stylesheet : S.StyleSheet Styles Variations
 stylesheet =
     S.styleSheet
         [ S.style None
-            [ S.variation Large [ SF.size 32 ]
+            [ S.variation Largest [ SF.size 60 ]
+            , S.variation Large [ SF.size 38 ]
+            , S.variation Bold [ SF.weight 700 ]
+            , S.variation Light [ SF.weight 300 ]
             ]
         , S.style Layout
             [ SC.background <| Color.black
             , SC.text <| Color.white
-            , SF.size 18
+            , SF.size 32
             , SF.typeface [ SF.font "Roboto" ]
             ]
         ]
