@@ -5,6 +5,8 @@ import Date.Extra.Format as DEF
 import Date.Extra.Config as DEC
 import Date.Extra.Config.Config_fr_fr as DECFR
 import Char
+import Html exposing (Html, i)
+import Html.Attributes exposing (..)
 
 
 dayAndMonth : Date -> String
@@ -52,3 +54,13 @@ ucfirst string =
 
         Nothing ->
             ""
+
+
+icon : String -> Html a
+icon str =
+    styledIcon [] str
+
+
+styledIcon : List ( String, String ) -> String -> Html a
+styledIcon styles str =
+    i [ class str, attribute "aria-hidden" "true", style styles ] []

@@ -16,13 +16,15 @@ import Svg.Attributes as SvgA
 view : Model -> Html Msg
 view model =
     viewport (S.stylesheet) <|
-        el S.Layout [ height fill, width fill, padding 80 ] <|
+        el S.Layout [ height fill, width fill, padding 60 ] <|
             case model.mybData of
                 Success data ->
                     column S.None
-                        [ spacing 300 ]
+                        [ spacingXY 0 320 ]
                         [ viewHeader model
-                        , viewMybData data
+                        , viewCountsMybData data
+                        , viewMoneyMybData data
+                        , viewTwitter
                         ]
 
                 _ ->
@@ -43,7 +45,7 @@ viewHeader model =
                         row S.None
                             []
                             [ viewWeatherIcon model.weather.currently.icon
-                            , text (Round.round 1 model.weather.currently.temperature ++ " °C")
+                            , el S.None [ vary S.Bold True, vary S.Largest True ] <| text (Round.round 1 model.weather.currently.temperature ++ "°")
                             ]
                     , viewTime model.datetime
                     ]
@@ -59,8 +61,8 @@ viewDate datetime =
         Just d ->
             column S.None
                 []
-                [ el S.None [ vary S.Bold True ] <| text (ucfirst (dayOfWeek d))
-                , el S.None [ vary S.Light True ] <| text <| dayAndMonth d
+                [ el S.None [ vary S.Bold True, vary S.Largest True ] <| text (ucfirst (dayOfWeek d))
+                , el S.None [ vary S.Light True, vary S.Large True ] <| text <| dayAndMonth d
                 ]
 
 
@@ -71,7 +73,7 @@ viewTime datetime =
             empty
 
         Just d ->
-            el S.None [ vary S.Bold True, vary S.Largest True ] <| text <| timeToStringFr d
+            el S.None [ vary S.Light True, vary S.Largest True ] <| text <| timeToStringFr d
 
 
 viewWeatherIcon : String -> Elem Msg
@@ -79,30 +81,69 @@ viewWeatherIcon icon =
     image S.None [] { src = "img/Cloud-Rain.svg", caption = "" }
 
 
-viewMybData : MybData -> Elem Msg
-viewMybData data =
+viewCountsMybData : MybData -> Elem Msg
+viewCountsMybData data =
     el S.None [] <|
-        column S.None
-            [ spacing 40 ]
-            [ el S.None [] <|
-                row S.None
-                    [ spacing 15 ]
-                    [ text <| "Nombre de commandes : " ++ toString data.countOrders
-                    , text <| " - " ++ toString data.todayOrders ++ " aujourd'hui"
-                    ]
-            , el S.None
-                []
-                (text <| "Panier moyen : " ++ toString data.avgCart ++ " €")
-            , el S.None
-                []
-                (text <| "Volume d'affaire : " ++ toString data.va ++ " €")
+        row S.None
+            []
+            [ el S.None [] <| column S.None [ spacing 50 ] [ viewUsers data, viewOrders data ]
+            ]
+
+
+viewMoneyMybData : MybData -> Elem Msg
+viewMoneyMybData data =
+    el S.None [ paddingXY 60 0 ] <|
+        row S.None
+            [ spacing 60 ]
+            [ el S.None [ vary S.Large True ] <| html <| icon "zmdi zmdi-shopping-cart zmdi-hc-5x"
             , el S.None [] <|
-                row S.None
+                column S.None
                     [ spacing 15 ]
-                    [ text <| "Nombre d'inscrits : " ++ toString data.countUsers
-                    , text <| " - " ++ toString data.todayUsers ++ " aujourd'hui"
+                    [ el S.None [ vary S.Largest True, vary S.Bold True ] <| text (Round.round 2 ((toFloat data.va) / 100) ++ " €")
+                    , el S.None [ vary S.Large True, vary S.Light True ] <|
+                        row S.None
+                            [ spacing 20, verticalCenter ]
+                            [ el S.None [] <| html <| icon "zmdi zmdi-shopping-basket zmdi-hc-2x"
+                            , el S.None [] <| text (toString data.avgCart ++ " €")
+                            ]
                     ]
-            , el S.None
-                []
-                (text <| "Manifs en prod : " ++ toString data.prodEvents)
+            ]
+
+
+viewUsers : MybData -> Elem Msg
+viewUsers data =
+    el S.None [] <|
+        row S.None
+            [ spacing 30 ]
+            [ el S.None [ vary S.Largest True, vary S.Bold True ] <| text (toString data.todayUsers)
+            , el S.None [] <|
+                column S.None
+                    [ spacing 5 ]
+                    [ el S.None [ vary S.Large True, vary S.Bold True ] <| text (toString data.countUsers)
+                    , el S.None [ vary S.Light True ] <| text "Inscrits"
+                    ]
+            ]
+
+
+viewOrders : MybData -> Elem Msg
+viewOrders data =
+    el S.None [] <|
+        row S.None
+            [ spacing 30 ]
+            [ el S.None [ vary S.Largest True, vary S.Bold True ] <| text (toString data.todayOrders)
+            , el S.None [] <|
+                column S.None
+                    [ spacing 5 ]
+                    [ el S.None [ vary S.Large True, vary S.Bold True ] <| text (toString data.countOrders)
+                    , el S.None [ vary S.Light True ] <| text "Commandes"
+                    ]
+            ]
+
+
+viewTwitter : Elem Msg
+viewTwitter =
+    el S.None [] <|
+        row S.None
+            []
+            [ el S.None [] <| html <| icon "zmdi zmdi-twitter zmdi-hc-5x"
             ]

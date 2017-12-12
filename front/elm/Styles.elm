@@ -23,8 +23,8 @@ stylesheet : S.StyleSheet Styles Variations
 stylesheet =
     S.styleSheet
         [ S.style None
-            [ S.variation Largest [ SF.size 60 ]
-            , S.variation Large [ SF.size 38 ]
+            [ S.variation Largest [ SF.size 66 ]
+            , S.variation Large [ SF.size 44 ]
             , S.variation Bold [ SF.weight 700 ]
             , S.variation Light [ SF.weight 300 ]
             ]

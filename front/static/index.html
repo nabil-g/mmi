@@ -42,26 +42,11 @@
               unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
           }
         </style>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
   </head>
   <body>
     <div id="main"></div>
   </body>
-  <script>
-    $('img').each(function () {
-  var $e = $(this);
-  var imgURL = $e.prop('src');
+  <script src="./appmmi.js"></script>
 
-  $.get(imgURL, function (data) {
-    // Get the SVG tag, ignore the rest
-    var $svg = $(data).find('svg');
-
-    // change the color
-    $svg.find('path').attr('fill', '#fff');
-
-    $e.prop('src', "data:image/svg+xml;base64," + window.btoa($svg.prop('outerHTML')));
-  });
-
-});
-  </script>
 </html>
