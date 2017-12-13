@@ -1,6 +1,5 @@
 module Model exposing (..)
 
-import Ports exposing (InfoForElm(..))
 import Time exposing (Time, second, minute)
 import Date exposing (Date, fromTime)
 import Task exposing (Task)
@@ -51,7 +50,6 @@ type alias MybData =
 
 type Msg
     = NoOp
-    | InfoFromOutside InfoForElm
     | FetchMybData
     | UpdateDateTime Time
     | ReceiveQueryResponse (GraphQLData MybData)
@@ -68,11 +66,6 @@ update msg model =
     case msg of
         NoOp ->
             model ! []
-
-        InfoFromOutside infoForElm ->
-            case Debug.log "infoForElm" infoForElm of
-                StuffReceived message ->
-                    model ! []
 
         FetchMybData ->
             model ! [ fetchMybDataCmd ]
@@ -99,7 +92,7 @@ update msg model =
 
 fetchWeather : Cmd Msg
 fetchWeather =
-    Http.get "http://localhost:5051/forecast/45.7701213,4.829064300000027?lang=fr&units=si&exclude=minutely,alerts,flags" decodeWeather
+    Http.get "http://localhost:3003/forecast/45.7701213,4.829064300000027?lang=fr&units=si&exclude=minutely,alerts,flags" decodeWeather
         |> Http.send ReceiveWeather
 
 

@@ -6,7 +6,7 @@ var db = require("./db.js");
 const { buildSchema } = require("graphql");
 const graphqlHTTP = require("express-graphql");
 const schema = require("./schema.js");
-var async = require("async");
+var request = require("request");
 
 var whitelist = ["http://localhost:3002"];
 var corsOptions = {
@@ -24,12 +24,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.get("/", function(req, res, next) {
-    res.json({ message: "bla" });
-});
+// ROUTES ////////////////
+//////////////////////////
 
 app.post("/mmi", function(req, res, next) {
-    res.json({ message: "blabla" });
+    res.json({ message: "OK" });
     var params = req.body;
     console.log("req", params);
 
@@ -47,6 +46,45 @@ app.post("/mmi", function(req, res, next) {
             .catch(e => console.log(e));
     }
 });
+
+app.use(
+    "/graphql",
+    graphqlHTTP({
+        schema: schema,
+        rootValue: global,
+        graphiql: true,
+    })
+);
+
+app.get("/forecast/:coords", function(req, res, next) {
+    request.get(
+        {
+            url: `https://api.darksky.net/forecast/537e53749d634ff0707fa5acadb2eab3/${
+                req.params.coords
+            }`,
+            qs: req.query,
+            json: true,
+            headers: { "User-Agent": "request" },
+        },
+        (error, response, body) => {
+            if (error) {
+                console.log("Error:", error);
+            } else if (response.statusCode !== 200) {
+                console.log("Status:", response.statusCode);
+            } else {
+                res.send(body);
+            }
+        }
+    );
+});
+
+app.listen(3003, function() {
+    console.log("Listening on port 3003!");
+});
+
+// MYB DATA //////////////
+//////////////////////////
+
 function handleNewUser(params, lastRow) {
     var newData = {
         countUsers: lastRow.countUsers + parseInt(params.new_user),
@@ -124,16 +162,3 @@ function getLastData() {
         });
     });
 }
-
-app.use(
-    "/graphql",
-    graphqlHTTP({
-        schema: schema,
-        rootValue: global,
-        graphiql: true,
-    })
-);
-
-app.listen(3003, function() {
-    console.log("Listening on port 3003!");
-});

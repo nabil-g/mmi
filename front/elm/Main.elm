@@ -1,7 +1,6 @@
 module Main exposing (..)
 
 import Html exposing (program)
-import Ports exposing (InfoForElm(..))
 import Time exposing (Time, second, minute)
 import Task
 import RemoteData exposing (RemoteData(..))
@@ -45,7 +44,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Time.every (10 * second) <| always FetchMybData
-        , Ports.getInfoFromOutside InfoFromOutside (always NoOp)
         , Time.every minute UpdateDateTime
         , Time.every (15 * minute) <| always FetchWeather
         ]
