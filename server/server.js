@@ -78,6 +78,31 @@ app.get("/forecast/:coords", function(req, res, next) {
     );
 });
 
+app.get("/last_tweet", function(req, res, next) {
+    request.get(
+        {
+            url: "https://api.twitter.com/1.1/statuses/user_timeline.json",
+            oauth: {
+                consumer_key: "dC3j3ePjUib6m2fdZvTKPS7Mb",
+                consumer_secret:
+                    "lojT6tjtND5O6KJsWZr1xbQNR76SifTpDo0pz0ID47M3ke0mva",
+            },
+            qs: { user_id: "740520993911898113", count: 1 },
+            json: true,
+            headers: { "User-Agent": "request" },
+        },
+        (error, response, body) => {
+            if (error) {
+                console.log("Error:", error);
+            } else if (response.statusCode !== 200) {
+                console.log("Status:", response.statusCode);
+            } else {
+                res.send(body);
+            }
+        }
+    );
+});
+
 app.listen(3003, function() {
     console.log("Listening on port 3003!");
 });

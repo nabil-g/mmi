@@ -5,7 +5,7 @@ import Time exposing (Time, second, minute)
 import Task
 import RemoteData exposing (RemoteData(..))
 import View exposing (view)
-import Model exposing (Model, Weather, CurrentWeather, Msg(..), fetchMybDataCmd, update, fetchWeather)
+import Model exposing (..)
 import Element as E
 
 
@@ -34,9 +34,10 @@ init flags =
         { mybData = NotAsked
         , datetime = Nothing
         , weather = initialWeather
+        , lastTweet = Nothing
         , device = newDevice
         }
-            ! [ fetchMybDataCmd, Task.perform UpdateDateTime Time.now, fetchWeather ]
+            ! [ fetchMybDataCmd, Task.perform UpdateDateTime Time.now, fetchWeather, fetchLastTweet ]
 
 
 initialWeather : Weather
@@ -58,4 +59,5 @@ subscriptions model =
         [ Time.every (10 * second) <| always FetchMybData
         , Time.every minute UpdateDateTime
         , Time.every (15 * minute) <| always FetchWeather
+        , Time.every (15 * minute) <| always FetchLastTweet
         ]

@@ -16,6 +16,7 @@ type alias Model =
     { mybData : GraphQLData MybData
     , datetime : Maybe Date
     , weather : Weather
+    , lastTweet : Maybe Tweet
     , device : E.Device
     }
 
@@ -28,6 +29,12 @@ type alias CurrentWeather =
     { icon : String
     , summary : String
     , temperature : Float
+    }
+
+
+type alias Tweet =
+    { createdAt : String
+    , text : String
     }
 
 
@@ -56,7 +63,9 @@ type Msg
     | UpdateDateTime Time
     | ReceiveQueryResponse (GraphQLData MybData)
     | FetchWeather
+    | FetchLastTweet
     | ReceiveWeather (Result Http.Error Weather)
+    | ReceiveTweets (Result Http.Error (List Tweet))
 
 
 
@@ -81,6 +90,9 @@ update msg model =
         FetchWeather ->
             model ! [ fetchWeather ]
 
+        FetchLastTweet ->
+            model ! [ fetchLastTweet ]
+
         ReceiveWeather response ->
             case response of
                 Ok w ->
@@ -91,11 +103,27 @@ update msg model =
                         model
                         ! []
 
+        ReceiveTweets response ->
+            case response of
+                Ok tweets ->
+                    { model | lastTweet = List.head tweets } ! []
+
+                Err e ->
+                    Debug.log ("ERROR when fetching last tweet" ++ toString e)
+                        model
+                        ! []
+
 
 fetchWeather : Cmd Msg
 fetchWeather =
     Http.get "http://localhost:3003/forecast/45.7701213,4.829064300000027?lang=fr&units=si&exclude=minutely,alerts,flags" decodeWeather
         |> Http.send ReceiveWeather
+
+
+fetchLastTweet : Cmd Msg
+fetchLastTweet =
+    Http.get "http://localhost:3003/last_tweet" decodeTweets
+        |> Http.send ReceiveTweets
 
 
 fetchMybDataCmd : Cmd Msg
@@ -141,3 +169,19 @@ decodeWeatherCurrently =
         |> P.required "icon" D.string
         |> P.required "summary" D.string
         |> P.required "temperature" D.float
+
+
+decodeTweets : D.Decoder (List Tweet)
+decodeTweets =
+    D.list decodeTweet
+
+
+decodeTweet : D.Decoder Tweet
+decodeTweet =
+    P.decode Tweet
+        |> P.required "created_at" D.string
+        |> P.required "text" D.string
+
+
+
+-- |> P.required "text" D.string

@@ -1,7 +1,7 @@
 module View exposing (..)
 
 import Html exposing (Html)
-import Model exposing (Model, Weather, MybData, Msg)
+import Model exposing (Model, Weather, MybData, Msg, Tweet)
 import RemoteData exposing (RemoteData(..))
 import Element exposing (viewport, el, column, row, text, empty, html, image)
 import Element.Attributes exposing (..)
@@ -28,7 +28,7 @@ view model =
                         [ viewHeader model
                         , viewCountsMybData data
                         , viewMoneyMybData data
-                        , viewTwitter
+                        , viewTwitter model.lastTweet
                         ]
 
                 _ ->
@@ -144,10 +144,16 @@ viewOrders data =
             ]
 
 
-viewTwitter : Elem Msg
-viewTwitter =
+viewTwitter : Maybe Tweet -> Elem Msg
+viewTwitter tweet =
     el S.None [] <|
         row S.None
-            []
+            [ verticalCenter, spacing 30 ]
             [ el S.None [] <| html <| icon "zmdi zmdi-twitter zmdi-hc-5x"
+            , case tweet of
+                Nothing ->
+                    el S.None [] <| text "no tweet"
+
+                Just t ->
+                    el S.None [] <| text (t.text)
             ]
