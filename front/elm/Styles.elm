@@ -19,19 +19,38 @@ type Variations
     | Light
 
 
-stylesheet : S.StyleSheet Styles Variations
-stylesheet =
+stylesheet : Bool -> S.StyleSheet Styles Variations
+stylesheet isBigPortrait =
     S.styleSheet
         [ S.style None
-            [ S.variation Largest [ SF.size 66 ]
-            , S.variation Large [ SF.size 44 ]
+            [ S.variation Largest
+                [ SF.size
+                    (if isBigPortrait then
+                        66
+                     else
+                        33
+                    )
+                ]
+            , S.variation Large
+                [ SF.size
+                    (if isBigPortrait then
+                        44
+                     else
+                        22
+                    )
+                ]
             , S.variation Bold [ SF.weight 700 ]
             , S.variation Light [ SF.weight 300 ]
             ]
         , S.style Layout
             [ SC.background <| Color.black
             , SC.text <| Color.white
-            , SF.size 32
+            , SF.size
+                (if isBigPortrait then
+                    32
+                 else
+                    16
+                )
             , SF.typeface [ SF.font "Roboto" ]
             ]
         ]

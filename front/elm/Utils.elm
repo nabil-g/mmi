@@ -7,6 +7,7 @@ import Date.Extra.Config.Config_fr_fr as DECFR
 import Char
 import Html exposing (Html, i)
 import Html.Attributes exposing (..)
+import Element as E
 
 
 dayAndMonth : Date -> String
@@ -64,3 +65,8 @@ icon str =
 styledIcon : List ( String, String ) -> String -> Html a
 styledIcon styles str =
     i [ class str, attribute "aria-hidden" "true", style styles ] []
+
+
+isBigPortrait : E.Device -> Bool
+isBigPortrait device =
+    device.height > 900 && device.portrait

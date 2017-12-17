@@ -9,18 +9,22 @@ import Styles as S exposing (Variations, Styles, Elem)
 import Utils exposing (..)
 import Date exposing (Date)
 import Round
-import Svg
-import Svg.Attributes as SvgA
 
 
 view : Model -> Html Msg
 view model =
-    viewport (S.stylesheet) <|
-        el S.Layout [ height fill, width fill, padding 60 ] <|
+    viewport (S.stylesheet (isBigPortrait model.device)) <|
+        el S.Layout [ height <| percent 100, clipX, clipY, width fill, padding 60 ] <|
             case model.mybData of
                 Success data ->
                     column S.None
-                        [ spacingXY 0 320 ]
+                        [ spacingXY 0
+                            (if isBigPortrait model.device then
+                                300
+                             else
+                                30
+                            )
+                        ]
                         [ viewHeader model
                         , viewCountsMybData data
                         , viewMoneyMybData data

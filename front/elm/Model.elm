@@ -9,12 +9,14 @@ import RemoteData exposing (RemoteData(..))
 import Json.Decode.Pipeline as P
 import Json.Decode as D
 import Http
+import Element as E
 
 
 type alias Model =
     { mybData : GraphQLData MybData
     , datetime : Maybe Date
     , weather : Weather
+    , device : E.Device
     }
 
 

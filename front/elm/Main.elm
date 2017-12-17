@@ -1,16 +1,17 @@
 module Main exposing (..)
 
-import Html exposing (program)
+import Html exposing (programWithFlags)
 import Time exposing (Time, second, minute)
 import Task
 import RemoteData exposing (RemoteData(..))
 import View exposing (view)
 import Model exposing (Model, Weather, CurrentWeather, Msg(..), fetchMybDataCmd, update, fetchWeather)
+import Element as E
 
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    program
+    programWithFlags
         { init = init
         , view = view
         , update = update
@@ -18,13 +19,24 @@ main =
         }
 
 
-init : ( Model, Cmd Msg )
-init =
-    { mybData = NotAsked
-    , datetime = Nothing
-    , weather = initialWeather
+type alias Flags =
+    { width : Int
+    , height : Int
     }
-        ! [ fetchMybDataCmd, Task.perform UpdateDateTime Time.now, fetchWeather ]
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    let
+        newDevice =
+            E.classifyDevice { width = flags.width, height = flags.height }
+    in
+        { mybData = NotAsked
+        , datetime = Nothing
+        , weather = initialWeather
+        , device = newDevice
+        }
+            ! [ fetchMybDataCmd, Task.perform UpdateDateTime Time.now, fetchWeather ]
 
 
 initialWeather : Weather
