@@ -10,6 +10,7 @@ import Element as E
 type Styles
     = None
     | Layout
+    | Image
 
 
 type Variations
@@ -53,6 +54,8 @@ stylesheet isBigPortrait =
                 )
             , SF.typeface [ SF.font "Roboto" ]
             ]
+        , S.style Image
+            []
         ]
 
 

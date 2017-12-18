@@ -35,6 +35,19 @@ type alias CurrentWeather =
 type alias Tweet =
     { createdAt : String
     , text : String
+    , media : List Media
+    }
+
+
+type alias Media =
+    { mediaUrl : String
+    , size : ImageSize
+    }
+
+
+type alias ImageSize =
+    { width : Int
+    , height : Int
     }
 
 
@@ -181,7 +194,18 @@ decodeTweet =
     P.decode Tweet
         |> P.required "created_at" D.string
         |> P.required "text" D.string
+        |> P.requiredAt [ "entities", "media" ] (D.list decodeMedia)
 
 
+decodeMedia : D.Decoder Media
+decodeMedia =
+    P.decode Media
+        |> P.required "media_url_https" D.string
+        |> P.requiredAt [ "sizes", "small" ] decodeSize
 
--- |> P.required "text" D.string
+
+decodeSize : D.Decoder ImageSize
+decodeSize =
+    P.decode ImageSize
+        |> P.required "w" D.int
+        |> P.required "h" D.int

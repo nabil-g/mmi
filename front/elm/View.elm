@@ -3,7 +3,7 @@ module View exposing (..)
 import Html exposing (Html)
 import Model exposing (Model, Weather, MybData, Msg, Tweet)
 import RemoteData exposing (RemoteData(..))
-import Element exposing (viewport, el, column, row, text, empty, html, image)
+import Element exposing (..)
 import Element.Attributes exposing (..)
 import Styles as S exposing (Variations, Styles, Elem)
 import Utils exposing (..)
@@ -146,14 +146,22 @@ viewOrders data =
 
 viewTwitter : Maybe Tweet -> Elem Msg
 viewTwitter tweet =
-    el S.None [] <|
-        row S.None
-            [ verticalCenter, spacing 30 ]
-            [ el S.None [] <| html <| icon "zmdi zmdi-twitter zmdi-hc-5x"
-            , case tweet of
-                Nothing ->
-                    el S.None [] <| text "no tweet"
+    case tweet of
+        Nothing ->
+            el S.None [] <| text "no tweet"
 
-                Just t ->
-                    el S.None [] <| text (t.text)
-            ]
+        Just t ->
+            el S.None [ width fill ] <|
+                row S.None
+                    [ spacing 30, verticalCenter ]
+                    [ case t.media of
+                        photo :: [] ->
+                            el S.None [] <|
+                                decorativeImage S.Image
+                                    [ inlineStyle [ ( "width", (toString (photo.size.width // 2)) ++ "px" ), ( "height", (toString (photo.size.height // 2)) ++ "px" ) ] ]
+                                    { src = photo.mediaUrl }
+
+                        _ ->
+                            el S.None [] <| html <| icon "zmdi zmdi-twitter zmdi-hc-5x"
+                    , textLayout S.None [] [ paragraph S.None [] [ text (t.text) ] ]
+                    ]
