@@ -15,6 +15,7 @@ type Styles
 
 type Variations
     = Large
+    | Larger
     | Largest
     | Bold
     | Light
@@ -27,17 +28,25 @@ stylesheet isBigPortrait =
             [ S.variation Largest
                 [ SF.size
                     (if isBigPortrait then
-                        66
+                        128
                      else
-                        33
+                        64
+                    )
+                ]
+            , S.variation Larger
+                [ SF.size
+                    (if isBigPortrait then
+                        94
+                     else
+                        47
                     )
                 ]
             , S.variation Large
                 [ SF.size
                     (if isBigPortrait then
-                        44
+                        58
                      else
-                        22
+                        29
                     )
                 ]
             , S.variation Bold [ SF.weight 700 ]
@@ -48,9 +57,9 @@ stylesheet isBigPortrait =
             , SC.text <| Color.white
             , SF.size
                 (if isBigPortrait then
-                    32
+                    42
                  else
-                    16
+                    21
                 )
             , SF.typeface [ SF.font "Roboto" ]
             ]

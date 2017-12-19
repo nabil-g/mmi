@@ -46,8 +46,8 @@ type alias Media =
 
 
 type alias ImageSize =
-    { width : Int
-    , height : Int
+    { width : Float
+    , height : Float
     }
 
 
@@ -207,5 +207,5 @@ decodeMedia =
 decodeSize : D.Decoder ImageSize
 decodeSize =
     P.decode ImageSize
-        |> P.required "w" D.int
-        |> P.required "h" D.int
+        |> P.required "w" D.float
+        |> P.required "h" D.float

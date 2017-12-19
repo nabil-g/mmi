@@ -9,26 +9,28 @@ import Styles as S exposing (Variations, Styles, Elem)
 import Utils exposing (..)
 import Date exposing (Date)
 import Round
+import FormatNumber as FN
+import FormatNumber.Locales exposing (Locale, frenchLocale)
 
 
 view : Model -> Html Msg
 view model =
     viewport (S.stylesheet (isBigPortrait model.device)) <|
-        el S.Layout [ height <| percent 100, clipX, clipY, width fill, padding 60 ] <|
+        el S.Layout [ height <| percent 100, clipX, clipY, width fill ] <|
             case model.mybData of
                 Success data ->
                     column S.None
                         [ spacingXY 0
                             (if isBigPortrait model.device then
-                                300
+                                200
                              else
                                 30
                             )
                         ]
                         [ viewHeader model
                         , viewCountsMybData data
-                        , viewMoneyMybData data
-                        , viewTwitter model.lastTweet
+                        , viewMoneyMybData data model.device
+                        , viewTweet model.lastTweet
                         ]
 
                 _ ->
@@ -48,8 +50,8 @@ viewHeader model =
                     [ el S.None [] <|
                         row S.None
                             []
-                            [ viewWeatherIcon model.weather.currently.icon
-                            , el S.None [ vary S.Bold True, vary S.Largest True ] <| text (Round.round 1 model.weather.currently.temperature ++ "°")
+                            [ el S.None [ vary S.Bold True, vary S.Largest True ] <| text (Round.round 1 model.weather.currently.temperature ++ "°")
+                            , viewWeatherIcon model.weather.currently.icon
                             ]
                     , viewTime model.datetime
                     ]
@@ -65,7 +67,7 @@ viewDate datetime =
         Just d ->
             column S.None
                 []
-                [ el S.None [ vary S.Bold True, vary S.Largest True ] <| text (ucfirst (dayOfWeek d))
+                [ el S.None [ vary S.Bold True, vary S.Larger True ] <| text (ucfirst (dayOfWeek d))
                 , el S.None [ vary S.Light True, vary S.Large True ] <| text <| dayAndMonth d
                 ]
 
@@ -90,25 +92,43 @@ viewCountsMybData data =
     el S.None [] <|
         row S.None
             []
-            [ el S.None [] <| column S.None [ spacing 50 ] [ viewUsers data, viewOrders data ]
+            [ el S.None [ width <| percent 50 ] <| column S.None [ spacing 50 ] [ viewUsers data, viewOrders data ]
             ]
 
 
-viewMoneyMybData : MybData -> Elem Msg
-viewMoneyMybData data =
-    el S.None [ paddingXY 60 0 ] <|
+viewMoneyMybData : MybData -> Device -> Elem Msg
+viewMoneyMybData data device =
+    el S.None [ center ] <|
         row S.None
-            [ spacing 60 ]
+            [ spacing
+                (if isBigPortrait device then
+                    100
+                 else
+                    40
+                )
+            ]
             [ el S.None [ vary S.Large True ] <| html <| icon "zmdi zmdi-shopping-cart zmdi-hc-5x"
             , el S.None [] <|
                 column S.None
                     [ spacing 15 ]
-                    [ el S.None [ vary S.Largest True, vary S.Bold True ] <| text (Round.round 2 ((toFloat data.va) / 100) ++ " €")
+                    [ el S.None [ vary S.Larger True, vary S.Bold True ] <|
+                        (data.va
+                            |> toFloat
+                            |> (\i -> i / 100)
+                            |> FN.format { frenchLocale | decimals = 0 }
+                            |> (\i -> i ++ " €")
+                            |> text
+                        )
                     , el S.None [ vary S.Large True, vary S.Light True ] <|
                         row S.None
                             [ spacing 20, verticalCenter ]
-                            [ el S.None [] <| html <| icon "zmdi zmdi-shopping-basket zmdi-hc-2x"
-                            , el S.None [] <| text (toString data.avgCart ++ " €")
+                            [ el S.None [] <| html <| icon "zmdi zmdi-shopping-basket zmdi-hc-lg"
+                            , el S.None [] <|
+                                (data.avgCart
+                                    |> FN.format { frenchLocale | decimals = 0 }
+                                    |> (\i -> i ++ " €")
+                                    |> text
+                                )
                             ]
                     ]
             ]
@@ -119,8 +139,8 @@ viewUsers data =
     el S.None [] <|
         row S.None
             [ spacing 30 ]
-            [ el S.None [ vary S.Largest True, vary S.Bold True ] <| text (toString data.todayUsers)
-            , el S.None [] <|
+            [ el S.None [ width <| fillPortion 1, vary S.Largest True, vary S.Bold True ] <| el S.None [ alignRight ] <| text (toString data.todayUsers)
+            , el S.None [ width <| fillPortion 2 ] <|
                 column S.None
                     [ spacing 5 ]
                     [ el S.None [ vary S.Large True, vary S.Bold True ] <| text (toString data.countUsers)
@@ -134,8 +154,8 @@ viewOrders data =
     el S.None [] <|
         row S.None
             [ spacing 30 ]
-            [ el S.None [ vary S.Largest True, vary S.Bold True ] <| text (toString data.todayOrders)
-            , el S.None [] <|
+            [ el S.None [ width <| fillPortion 1, vary S.Largest True, vary S.Bold True ] <| el S.None [ alignRight ] <| text (toString data.todayOrders)
+            , el S.None [ width <| fillPortion 2 ] <|
                 column S.None
                     [ spacing 5 ]
                     [ el S.None [ vary S.Large True, vary S.Bold True ] <| text (toString data.countOrders)
@@ -144,24 +164,24 @@ viewOrders data =
             ]
 
 
-viewTwitter : Maybe Tweet -> Elem Msg
-viewTwitter tweet =
+viewTweet : Maybe Tweet -> Elem Msg
+viewTweet tweet =
     case tweet of
         Nothing ->
-            el S.None [] <| text "no tweet"
+            el S.None [] <| text "..."
 
         Just t ->
             el S.None [ width fill ] <|
                 row S.None
-                    [ spacing 30, verticalCenter ]
+                    [ spacing 40, verticalCenter ]
                     [ case t.media of
                         photo :: [] ->
                             el S.None [] <|
                                 decorativeImage S.Image
-                                    [ inlineStyle [ ( "width", (toString (photo.size.width // 2)) ++ "px" ), ( "height", (toString (photo.size.height // 2)) ++ "px" ) ] ]
+                                    [ inlineStyle [ ( "width", (toString (photo.size.width * 0.5)) ++ "px" ), ( "height", (toString (photo.size.height * 0.5)) ++ "px" ) ] ]
                                     { src = photo.mediaUrl }
 
                         _ ->
                             el S.None [] <| html <| icon "zmdi zmdi-twitter zmdi-hc-5x"
-                    , textLayout S.None [] [ paragraph S.None [] [ text (t.text) ] ]
+                    , textLayout S.None [ vary S.Light True ] [ paragraph S.None [] [ text (t.text) ] ]
                     ]
