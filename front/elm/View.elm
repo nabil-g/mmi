@@ -43,7 +43,11 @@ viewHeader model =
         row S.None
             [ width fill, spread ]
             [ el S.None [ alignLeft ] <|
-                viewDate model.datetime
+                column S.None
+                    [ spacing 40 ]
+                    [ viewDate model.datetime
+                    , viewSaint
+                    ]
             , el S.None [ vary S.Large True, alignRight ] <|
                 column S.None
                     []
@@ -70,6 +74,16 @@ viewDate datetime =
                 [ el S.None [ vary S.Bold True, vary S.Larger True ] <| text (ucfirst (dayOfWeek d))
                 , el S.None [ vary S.Light True, vary S.Large True ] <| text <| dayAndMonth d
                 ]
+
+
+viewSaint : Elem Msg
+viewSaint =
+    el S.None [ vary S.Bold True ] <|
+        row S.None
+            [ spacing 30 ]
+            [ el S.None [] <| html <| icon "zmdi zmdi-chevron-right zmdi-hc-lg"
+            , el S.None [] <| text "St Théophile"
+            ]
 
 
 viewTime : Maybe Date -> Elem Msg
