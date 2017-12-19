@@ -28,9 +28,9 @@ stylesheet isBigPortrait =
             [ S.variation Largest
                 [ SF.size
                     (if isBigPortrait then
-                        128
+                        130
                      else
-                        64
+                        65
                     )
                 ]
             , S.variation Larger
@@ -44,9 +44,9 @@ stylesheet isBigPortrait =
             , S.variation Large
                 [ SF.size
                     (if isBigPortrait then
-                        58
+                        64
                      else
-                        29
+                        32
                     )
                 ]
             , S.variation Bold [ SF.weight 700 ]
@@ -57,9 +57,9 @@ stylesheet isBigPortrait =
             , SC.text <| Color.white
             , SF.size
                 (if isBigPortrait then
-                    42
+                    40
                  else
-                    21
+                    20
                 )
             , SF.typeface [ SF.font "Roboto" ]
             ]

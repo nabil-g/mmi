@@ -107,7 +107,7 @@ viewMoneyMybData data device =
                     40
                 )
             ]
-            [ el S.None [ vary S.Large True ] <| html <| icon "zmdi zmdi-shopping-cart zmdi-hc-5x"
+            [ el S.None [ vary S.Large True ] <| html <| icon "zmdi zmdi-shopping-cart zmdi-hc-4x"
             , el S.None [] <|
                 column S.None
                     [ spacing 15 ]
@@ -119,11 +119,11 @@ viewMoneyMybData data device =
                             |> (\i -> i ++ " €")
                             |> text
                         )
-                    , el S.None [ vary S.Large True, vary S.Light True ] <|
+                    , el S.None [] <|
                         row S.None
-                            [ spacing 20, verticalCenter ]
-                            [ el S.None [] <| html <| icon "zmdi zmdi-shopping-basket zmdi-hc-lg"
-                            , el S.None [] <|
+                            [ spacing 40, verticalCenter ]
+                            [ el S.None [ vary S.Large True ] <| html <| icon "zmdi zmdi-shopping-basket zmdi-hc-lg"
+                            , el S.None [ vary S.Larger True, vary S.Light True ] <|
                                 (data.avgCart
                                     |> FN.format { frenchLocale | decimals = 0 }
                                     |> (\i -> i ++ " €")
@@ -138,12 +138,17 @@ viewUsers : MybData -> Elem Msg
 viewUsers data =
     el S.None [] <|
         row S.None
-            [ spacing 30 ]
+            [ spacing 30, verticalCenter, width fill ]
             [ el S.None [ width <| fillPortion 1, vary S.Largest True, vary S.Bold True ] <| el S.None [ alignRight ] <| text (toString data.todayUsers)
             , el S.None [ width <| fillPortion 2 ] <|
                 column S.None
-                    [ spacing 5 ]
-                    [ el S.None [ vary S.Large True, vary S.Bold True ] <| text (toString data.countUsers)
+                    []
+                    [ el S.None [ vary S.Large True, vary S.Bold True ] <|
+                        (data.countUsers
+                            |> toFloat
+                            |> FN.format { frenchLocale | decimals = 0 }
+                            |> text
+                        )
                     , el S.None [ vary S.Light True ] <| text "Inscrits"
                     ]
             ]
@@ -153,12 +158,17 @@ viewOrders : MybData -> Elem Msg
 viewOrders data =
     el S.None [] <|
         row S.None
-            [ spacing 30 ]
+            [ spacing 30, verticalCenter, width fill ]
             [ el S.None [ width <| fillPortion 1, vary S.Largest True, vary S.Bold True ] <| el S.None [ alignRight ] <| text (toString data.todayOrders)
             , el S.None [ width <| fillPortion 2 ] <|
                 column S.None
-                    [ spacing 5 ]
-                    [ el S.None [ vary S.Large True, vary S.Bold True ] <| text (toString data.countOrders)
+                    []
+                    [ el S.None [ vary S.Large True, vary S.Bold True ] <|
+                        (data.countOrders
+                            |> toFloat
+                            |> FN.format { frenchLocale | decimals = 0 }
+                            |> text
+                        )
                     , el S.None [ vary S.Light True ] <| text "Commandes"
                     ]
             ]
