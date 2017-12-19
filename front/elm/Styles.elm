@@ -10,7 +10,7 @@ import Element as E
 type Styles
     = None
     | Layout
-    | Image
+    | WeatherIcon
 
 
 type Variations
@@ -63,8 +63,11 @@ stylesheet isBigPortrait =
                 )
             , SF.typeface [ SF.font "Roboto" ]
             ]
-        , S.style Image
-            []
+        , S.style WeatherIcon
+            [ S.prop "width" "220px"
+            , S.prop "height" "220px"
+            , S.prop "margin" "-40px"
+            ]
         ]
 
 

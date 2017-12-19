@@ -84,7 +84,7 @@ viewTime datetime =
 
 viewWeatherIcon : String -> Elem Msg
 viewWeatherIcon icon =
-    image S.None [] { src = "img/Cloud-Rain.svg", caption = "" }
+    image S.WeatherIcon [ paddingLeft 5 ] { src = getSvgIcon icon, caption = "" }
 
 
 viewCountsMybData : MybData -> Elem Msg
@@ -177,7 +177,7 @@ viewTweet tweet =
                     [ case t.media of
                         photo :: [] ->
                             el S.None [] <|
-                                decorativeImage S.Image
+                                decorativeImage S.None
                                     [ inlineStyle [ ( "width", (toString (photo.size.width * 0.5)) ++ "px" ), ( "height", (toString (photo.size.height * 0.5)) ++ "px" ) ] ]
                                     { src = photo.mediaUrl }
 
@@ -185,3 +185,53 @@ viewTweet tweet =
                             el S.None [] <| html <| icon "zmdi zmdi-twitter zmdi-hc-5x"
                     , textLayout S.None [ vary S.Light True ] [ paragraph S.None [] [ text (t.text) ] ]
                     ]
+
+
+getSvgIcon : String -> String
+getSvgIcon icon =
+    let
+        path =
+            case icon of
+                "clear-day" ->
+                    "Sun"
+
+                "clear-night" ->
+                    "Moon"
+
+                "rain" ->
+                    "Cloud-Rain"
+
+                "snow" ->
+                    "Cloud-Snow-Alt"
+
+                "sleet" ->
+                    "Cloud-Hail"
+
+                "hail" ->
+                    "Cloud-Hail-Alt"
+
+                "wind" ->
+                    "Wind"
+
+                "fog" ->
+                    "Cloud-Fog"
+
+                "cloudy" ->
+                    "Cloud"
+
+                "partly-cloudy-day" ->
+                    "Cloud-Sun"
+
+                "partly-cloudy-night" ->
+                    "Cloud-Moon"
+
+                "thunderstorm" ->
+                    "Cloud-Lightning"
+
+                "tornado" ->
+                    "Tornado"
+
+                _ ->
+                    "Sun"
+    in
+        "img/" ++ path ++ ".svg"
