@@ -87,7 +87,11 @@ app.get("/last_tweet", function(req, res, next) {
                 consumer_secret:
                     "lojT6tjtND5O6KJsWZr1xbQNR76SifTpDo0pz0ID47M3ke0mva",
             },
-            qs: { user_id: "740520993911898113", count: 1 },
+            qs: {
+                user_id: "740520993911898113",
+                count: 1,
+                tweet_mode: "extended",
+            },
             json: true,
             headers: { "User-Agent": "request" },
         },

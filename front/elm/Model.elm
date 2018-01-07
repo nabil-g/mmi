@@ -98,7 +98,7 @@ update msg model =
             { model | datetime = Just <| fromTime time } ! []
 
         ReceiveQueryResponse response ->
-            { model | mybData = Debug.log "response" response } ! []
+            { model | mybData = response } ! []
 
         FetchWeather ->
             model ! [ fetchWeather ]
@@ -193,8 +193,30 @@ decodeTweet : D.Decoder Tweet
 decodeTweet =
     P.decode Tweet
         |> P.required "created_at" D.string
-        |> P.required "text" D.string
+        |> P.required "full_text" decodeTweetText
         |> P.requiredAt [ "entities", "media" ] (D.list decodeMedia)
+
+
+decodeTweetText : D.Decoder String
+decodeTweetText =
+    D.string
+        |> D.andThen
+            (\s ->
+                let
+                    ind =
+                        String.indexes "http" s
+                in
+                    case List.head (List.reverse ind) of
+                        Just lastIndex ->
+                            s
+                                |> String.length
+                                |> flip (-) lastIndex
+                                |> flip String.dropRight s
+                                |> D.succeed
+
+                        _ ->
+                            D.succeed s
+            )
 
 
 decodeMedia : D.Decoder Media
