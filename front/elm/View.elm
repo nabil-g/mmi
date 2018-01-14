@@ -82,7 +82,7 @@ viewSaint =
         row S.None
             [ spacing 30 ]
             [ el S.None [] <| html <| icon "zmdi zmdi-chevron-right zmdi-hc-lg"
-            , el S.None [] <| text "St Théophile"
+            , el S.None [] <| text "Hiver"
             ]
 
 
@@ -139,8 +139,8 @@ viewMoneyMybData data device =
                             [ el S.None [ vary S.Large True ] <| html <| icon "zmdi zmdi-shopping-basket zmdi-hc-lg"
                             , el S.None [ vary S.Larger True, vary S.Light True ] <|
                                 (data.avgCart
-                                    |> FN.format { frenchLocale | decimals = 0 }
-                                    |> (\i -> i ++ " €")
+                                    |> toString
+                                    |> flip (++) " €"
                                     |> text
                                 )
                             ]

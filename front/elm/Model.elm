@@ -58,7 +58,7 @@ type alias GraphQLData a =
 type alias MybData =
     { countOrders : Int
     , todayOrders : Int
-    , avgCart : Float
+    , avgCart : Int
     , va : Int
     , countUsers : Int
     , todayUsers : Int
@@ -154,7 +154,7 @@ fetchMybData =
             (object MybData
                 |> with (field "countOrders" [] int)
                 |> with (field "todayOrders" [] int)
-                |> with (field "avgCart" [] float)
+                |> with (field "avgCart" [] int)
                 |> with (field "va" [] int)
                 |> with (field "countUsers" [] int)
                 |> with (field "todayUsers" [] int)

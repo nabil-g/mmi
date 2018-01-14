@@ -140,7 +140,7 @@ function handleNewUser(params, lastRow) {
 function handleNewOrder(params, lastRow) {
     var newCountOrders = lastRow.countOrders + 1;
     var newVa = lastRow.va + parseFloat(params.amount);
-    var newAvgCart = newVa / newCountOrders;
+    var newAvgCart = Math.round(newVa / 100 / newCountOrders);
     var newData = {
         countOrders: newCountOrders,
         va: newVa,
@@ -164,18 +164,40 @@ function handleNewOrder(params, lastRow) {
 }
 
 function updateTodayData(newData, id) {
-    db.query(
-        "UPDATE myb_data SET ? WHERE id= ?",
-        [newData, id],
-        (err, results) => {
-            if (err) console.log("err", err);
-            console.log("Today data updated");
+    var set = "";
+    for (var item in newData) {
+        if (!newData.hasOwnProperty(item)) {
+            continue;
         }
-    );
+        set += item + "=" + newData[item] + ", ";
+    }
+
+    var sql = 'UPDATE "myb_data" SET ' + set.slice(0, -2) + " WHERE id= " + id;
+    db.run(sql, (err, results) => {
+        if (err) console.log("err", err);
+        console.log("Today data updated");
+    });
 }
 
 function insertNewData(newData) {
-    db.query("INSERT INTO myb_data SET ?", newData, (err, results) => {
+    var keys = [];
+    var values = [];
+    for (var item in newData) {
+        if (!newData.hasOwnProperty(item)) {
+            continue;
+        }
+
+        keys.push(item);
+        values.push(newData[item]);
+    }
+    var sql =
+        "INSERT INTO myb_data(" +
+        keys.join(",") +
+        ") VALUES (" +
+        values.join(",") +
+        ")" +
+        ";";
+    db.run(sql, (err, results) => {
         if (err) console.log("err", err);
         console.log("New today data inserted");
     });
@@ -185,7 +207,7 @@ function getLastData() {
     return new Promise((resolve, reject) => {
         let sql =
             "SELECT id, countOrders, prodEvents, countUsers, todayOrders, todayUsers, avgCart, va, DATE(createdAt) as createdAt FROM myb_data  ORDER BY ID DESC LIMIT 1;";
-        db.query(sql, (err, results) => {
+        db.all(sql, (err, results) => {
             if (err) reject(err);
             resolve(results[0]);
         });

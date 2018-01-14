@@ -15,7 +15,7 @@ const MybData = new GraphQLObjectType({
     fields: () => ({
         countOrders: { type: GraphQLInt },
         todayOrders: { type: GraphQLInt },
-        avgCart: { type: GraphQLFloat },
+        avgCart: { type: GraphQLInt },
         va: { type: GraphQLInt },
         countUsers: { type: GraphQLInt },
         todayUsers: { type: GraphQLInt },
@@ -47,7 +47,7 @@ const Schema = new GraphQLSchema({
 function resolveMybData() {
     return new Promise((resolve, reject) => {
         let sql = "SELECT * FROM myb_data ORDER BY ID DESC LIMIT 1";
-        db.query(sql, (err, results) => {
+        db.all(sql, (err, results) => {
             if (err) reject(err);
             resolve(results);
         });
