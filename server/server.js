@@ -8,7 +8,10 @@ const graphqlHTTP = require("express-graphql");
 const schema = require("./schema.js");
 var request = require("request");
 
-var whitelist = ["http://localhost:3002"];
+var whitelist = [
+    "http://localhost:3002",
+    "https://staging.mybrocante-test.ovh:42424",
+];
 var corsOptions = {
     origin: function(origin, callback) {
         var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
@@ -107,8 +110,8 @@ app.get("/last_tweet", function(req, res, next) {
     );
 });
 
-app.listen(3003, function() {
-    console.log("Listening on port 3003!");
+app.listen(42425, function() {
+    console.log("Listening on port 42425!");
 });
 
 // MYB DATA //////////////
