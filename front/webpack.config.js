@@ -116,7 +116,7 @@ if (TARGET_ENV === "production") {
         plugins: [
             new CopyWebpackPlugin([
        { from: './static/climacons', to: 'img' }
-     ])
+     ]),
 
             new webpack.optimize.OccurenceOrderPlugin(),
 
