@@ -22,7 +22,7 @@ var commonConfig = {
     output: {
         path: outputPath,
         filename: outputFilename,
-        publicPath: "http://localhost:3002/",
+        publicPath: "http://54.36.52.224:42424/",
     },
 
     resolve: {
@@ -58,7 +58,7 @@ if (TARGET_ENV === "development") {
     console.log("Serving locally...");
 
     module.exports = merge(commonConfig, {
-        entry: ["webpack-dev-server/client?http://localhost:3002", entryPath],
+        entry: ["webpack-dev-server/client?http://54.36.52.224:42424", entryPath],
 
         devServer: {
             // serve index.html in place of 404 responses
@@ -115,14 +115,8 @@ if (TARGET_ENV === "production") {
 
         plugins: [
             new CopyWebpackPlugin([
-                {
-                    from: "./static/img/",
-                    to: "./static/img/",
-                },
-                {
-                    from: "src/favicon.ico",
-                },
-            ]),
+       { from: './static/climacons', to: 'img' }
+     ])
 
             new webpack.optimize.OccurenceOrderPlugin(),
 

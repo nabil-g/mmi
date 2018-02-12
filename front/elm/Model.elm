@@ -129,13 +129,13 @@ update msg model =
 
 fetchWeather : Cmd Msg
 fetchWeather =
-    Http.get "http://localhost:3003/forecast/45.7701213,4.829064300000027?lang=fr&units=si&exclude=minutely,alerts,flags" decodeWeather
+    Http.get "http://54.36.52.224:42425/forecast/45.7701213,4.829064300000027?lang=fr&units=si&exclude=minutely,alerts,flags" decodeWeather
         |> Http.send ReceiveWeather
 
 
 fetchLastTweet : Cmd Msg
 fetchLastTweet =
-    Http.get "http://localhost:3003/last_tweet" decodeTweets
+    Http.get "http://54.36.52.224:42425/last_tweet" decodeTweets
         |> Http.send ReceiveTweets
 
 
@@ -167,7 +167,7 @@ fetchMybData =
 
 sendQueryRequest : Request Query a -> Task GraphQLClient.Error a
 sendQueryRequest request =
-    GraphQLClient.sendQuery "http://localhost:3003/graphql" request
+    GraphQLClient.sendQuery "http://54.36.52.224:42425/graphql" request
 
 
 decodeWeather : D.Decoder Weather
