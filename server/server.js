@@ -10,7 +10,7 @@ var request = require("request");
 
 var whitelist = [
     "http://localhost:3002",
-    "https://staging.mybrocante-test.ovh:42424",
+    "https://54.36.52.224:42424",
 ];
 var corsOptions = {
     origin: function(origin, callback) {
