@@ -5,7 +5,7 @@
   "author": "dway8",
   "license": "ISC",
   "scripts": {
-    "start": "webpack-dev-server --hot --inline --port 3002",
+    "start": "webpack-dev-server --hot --inline --port 42424",
     "build": "rimraf dist && webpack",
     "elm:install": "elm-package install --yes",
     "elm:reinstall": "rm -rf elm-stuff/; yarn elm:install",
