@@ -8,10 +8,7 @@ const graphqlHTTP = require("express-graphql");
 const schema = require("./schema.js");
 var request = require("request");
 
-var whitelist = [
-    "http://localhost:3002",
-    "https://54.36.52.224:42424",
-];
+var whitelist = ["http://localhost:3002", "http://54.36.52.224:42424"];
 var corsOptions = {
     origin: function(origin, callback) {
         var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
