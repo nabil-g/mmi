@@ -10,6 +10,7 @@ import Json.Decode.Pipeline as P
 import Json.Decode as D
 import Http
 import Element as E
+import Ports exposing (InfoForOutside(..))
 
 
 type alias Model =
@@ -98,7 +99,19 @@ update msg model =
             { model | datetime = Just <| fromTime time } ! []
 
         ReceiveQueryResponse response ->
-            { model | mybData = response } ! []
+            let
+                cmd =
+                    case ( response, model.mybData ) of
+                        ( Success newData, Success currentData ) ->
+                            if newData.countOrders > currentData.countOrders then
+                                Ports.sendInfoOutside PlayCashRegister
+                            else
+                                Cmd.none
+
+                        ( _, _ ) ->
+                            Cmd.none
+            in
+                { model | mybData = response } ! [ cmd ]
 
         FetchWeather ->
             model ! [ fetchWeather ]
