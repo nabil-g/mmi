@@ -83,6 +83,8 @@ type Msg
     | FetchLastTweet
     | ReceiveWeather (Result Http.Error Weather)
     | ReceiveTweets (Result Http.Error (List Tweet))
+    | ResetDayDataAtMidnight Time
+    | ResetDayDataResponse (Result Http.Error Bool)
 
 
 
@@ -142,6 +144,19 @@ update msg model =
                         model
                         ! []
 
+        ResetDayDataAtMidnight time ->
+            let
+                cmd =
+                    if Date.hour (fromTime time) == 1 then
+                        resetDayData
+                    else
+                        Cmd.none
+            in
+                model ! [ cmd ]
+
+        ResetDayDataResponse response ->
+            model ! []
+
 
 fetchWeather : Cmd Msg
 fetchWeather =
@@ -184,6 +199,13 @@ fetchMybData =
         )
         |> queryDocument
         |> request {}
+
+
+resetDayData : Cmd Msg
+resetDayData =
+    Http.get "http://54.36.52.224:42425/reset_day" D.bool
+        -- Http.get "http://localhost:42425/reset_day" D.bool
+        |> Http.send ResetDayDataResponse
 
 
 sendQueryRequest : Request Query a -> Task GraphQLClient.Error a
