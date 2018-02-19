@@ -202,7 +202,7 @@ function handleNewAd(params, lastRow) {
     }
 }
 function handleProdEvent(params, lastRow) {
-    var newTotalEvents = lastRow.totalEvents + params.prod_event;
+    var newTotalEvents = lastRow.totalEvents + parseInt(params.prod_event);
     var newData = {
         totalEvents: newTotalEvents,
     };
@@ -220,7 +220,7 @@ function handleProdEvent(params, lastRow) {
         newData.ads = lastRow.ads;
         insertNewData(newData);
     } else {
-        newData.prodEvents = lastRow.prodEvents + 1;
+        newData.prodEvents = lastRow.prodEvents + parseInt(params.prod_event);
         updateTodayData(newData, lastRow.id);
     }
 }
