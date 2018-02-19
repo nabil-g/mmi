@@ -50,7 +50,7 @@ viewHeader model =
                     ]
             , el None [ vary Large True, alignRight ] <|
                 column None
-                    []
+                    [ alignRight ]
                     [ viewTime model.datetime
                     , el None [] <|
                         row None
@@ -115,7 +115,7 @@ viewCountsMybData data =
                     ]
             , el Border [ vary Left True, width <| percent 50, center ] <|
                 column None
-                    [ spacing 50, paddingLeft 50 ]
+                    [ spacing 50, paddingLeft 100 ]
                     [ viewProdEvents data
                     , viewAds data
                     ]
