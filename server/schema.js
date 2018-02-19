@@ -19,8 +19,10 @@ const MybData = new GraphQLObjectType({
         va: { type: GraphQLInt },
         countUsers: { type: GraphQLInt },
         todayUsers: { type: GraphQLInt },
+        totalEvents: { type: GraphQLInt },
         prodEvents: { type: GraphQLInt },
         ads: { type: GraphQLInt },
+        todayAds: { type: GraphQLInt },
     }),
 });
 

@@ -19,6 +19,7 @@ type Variations
     = Large
     | Larger
     | Largest
+    | Extralarge
     | Bold
     | Light
     | Left
@@ -50,6 +51,14 @@ stylesheet isBigPortrait =
                         64
                      else
                         32
+                    )
+                ]
+            , S.variation Extralarge
+                [ SF.size
+                    (if isBigPortrait then
+                        180
+                     else
+                        90
                     )
                 ]
             , S.variation Bold [ SF.weight 700 ]

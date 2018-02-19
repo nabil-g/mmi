@@ -44,20 +44,20 @@ viewHeader model =
             [ width fill, spread ]
             [ el None [ alignLeft ] <|
                 column None
-                    [ spacing 40 ]
+                    [ spacing 80 ]
                     [ viewDate model.datetime
                     , viewSaint
                     ]
             , el None [ vary Large True, alignRight ] <|
                 column None
                     []
-                    [ el None [] <|
+                    [ viewTime model.datetime
+                    , el None [] <|
                         row None
-                            []
-                            [ el None [ vary Bold True, vary Largest True ] <| text (Round.round 1 model.weather.currently.temperature ++ "°")
+                            [ verticalCenter ]
+                            [ el None [ vary Bold True, vary Larger True ] <| text (Round.round 1 model.weather.currently.temperature ++ "°")
                             , viewWeatherIcon model.weather.currently.icon
                             ]
-                    , viewTime model.datetime
                     ]
             ]
 
@@ -69,11 +69,12 @@ viewDate datetime =
             empty
 
         Just d ->
-            column None
-                []
-                [ el None [ vary Bold True, vary Larger True ] <| text (ucfirst (dayOfWeek d))
-                , el None [ vary Light True, vary Large True ] <| text <| dayAndMonth d
-                ]
+            el None [] <|
+                column None
+                    []
+                    [ el None [ vary Bold True, vary Larger True ] <| text (ucfirst (dayOfWeek d))
+                    , el None [ vary Light True, vary Large True ] <| text <| dayAndMonth d
+                    ]
 
 
 viewSaint : Elem Msg
@@ -93,7 +94,7 @@ viewTime datetime =
             empty
 
         Just d ->
-            el None [ vary Light True, vary Largest True ] <| text <| timeToStringFr d
+            el None [ vary Light True, vary Extralarge True ] <| text <| timeToStringFr d
 
 
 viewWeatherIcon : String -> Elem Msg
@@ -127,7 +128,17 @@ viewProdEvents data =
         row None
             [ spacing 30, verticalCenter, width fill ]
             [ el None [ width <| fillPortion 1, vary Largest True, vary Bold True ] <| el None [ alignRight ] <| text (toString data.prodEvents)
-            , el None [ width <| fillPortion 2, vary Large True, vary Light True ] <| text "Prod"
+            , el None [ width <| fillPortion 2 ] <|
+                column None
+                    []
+                    [ el None [ vary Large True, vary Bold True ] <|
+                        (data.totalEvents
+                            |> toFloat
+                            |> FN.format { frenchLocale | decimals = 0 }
+                            |> text
+                        )
+                    , el None [ vary Light True ] <| text "Prod"
+                    ]
             ]
 
 
@@ -136,8 +147,18 @@ viewAds data =
     el None [] <|
         row None
             [ spacing 30, verticalCenter, width fill ]
-            [ el None [ width <| fillPortion 1, vary Largest True, vary Bold True ] <| el None [ alignRight ] <| text (toString data.ads)
-            , el None [ width <| fillPortion 2, vary Large True, vary Light True ] <| text "Annonces"
+            [ el None [ width <| fillPortion 1, vary Largest True, vary Bold True ] <| el None [ alignRight ] <| text ("+" ++ toString data.todayAds)
+            , el None [ width <| fillPortion 2 ] <|
+                column None
+                    []
+                    [ el None [ vary Large True, vary Bold True ] <|
+                        (data.ads
+                            |> toFloat
+                            |> FN.format { frenchLocale | decimals = 0 }
+                            |> text
+                        )
+                    , el None [ vary Light True ] <| text "Annonces"
+                    ]
             ]
 
 

@@ -50,6 +50,12 @@ app.post("/mmi", function(req, res, next) {
                 handleNewAd(params, lastRow);
             })
             .catch(e => console.log(e));
+    } else if (params.prod_event) {
+        var result = getLastData()
+            .then(function(lastRow) {
+                handleProdEvent(params, lastRow);
+            })
+            .catch(e => console.log(e));
     }
 });
 
@@ -132,7 +138,7 @@ function handleNewUser(params, lastRow) {
         console.log("no insertion yet for today");
         // no insertion yet for today
         newData.countOrders = lastRow.countOrders;
-        newData.prodEvents = lastRow.prodEvents;
+        newData.totalEvents = lastRow.totalEvents;
         newData.va = lastRow.va;
         newData.avgCart = lastRow.avgCart;
         newData.ads = lastRow.ads;
@@ -161,7 +167,7 @@ function handleNewOrder(params, lastRow) {
         console.log("no insertion yet for today");
         // no insertion yet for today
         newData.countUsers = lastRow.countUsers;
-        newData.prodEvents = lastRow.prodEvents;
+        newData.totalEvents = lastRow.totalEvents;
         newData.ads = lastRow.ads;
         newData.todayOrders = 1;
         insertNewData(newData);
@@ -184,16 +190,40 @@ function handleNewAd(params, lastRow) {
         console.log("no insertion yet for today");
         // no insertion yet for today
         newData.countUsers = lastRow.countUsers;
-        newData.prodEvents = lastRow.prodEvents;
+        newData.totalEvents = lastRow.totalEvents;
         newData.countOrders = lastRow.countOrders;
         newData.va = lastRow.va;
         newData.avgCart = lastRow.avgCart;
+        newData.todayAds = 1;
         insertNewData(newData);
     } else {
+        newData.todayAds = lastRow.todayAds + 1;
         updateTodayData(newData, lastRow.id);
     }
 }
+function handleProdEvent(params, lastRow) {
+    var newTotalEvents = lastRow.totalEvents + params.prod_event;
+    var newData = {
+        totalEvents: newTotalEvents,
+    };
 
+    var today = new Date().setHours(0, 0, 0, 0);
+    var lastRowDate = new Date(lastRow.createdAt).setHours(0, 0, 0, 0);
+
+    if (lastRowDate < today) {
+        console.log("no insertion yet for today");
+        // no insertion yet for today
+        newData.countUsers = lastRow.countUsers;
+        newData.countOrders = lastRow.countOrders;
+        newData.va = lastRow.va;
+        newData.avgCart = lastRow.avgCart;
+        newData.ads = lastRow.ads;
+        insertNewData(newData);
+    } else {
+        newData.prodEvents = lastRow.prodEvents + 1;
+        updateTodayData(newData, lastRow.id);
+    }
+}
 function updateTodayData(newData, id) {
     var set = "";
     for (var item in newData) {
@@ -237,7 +267,7 @@ function insertNewData(newData) {
 function getLastData() {
     return new Promise((resolve, reject) => {
         let sql =
-            "SELECT id, countOrders, prodEvents, countUsers, todayOrders, todayUsers, avgCart, va, DATE(createdAt) as createdAt, ads FROM myb_data  ORDER BY ID DESC LIMIT 1;";
+            "SELECT id, countOrders, totalEvents, prodEvents, countUsers, todayOrders, todayUsers, avgCart, va, DATE(createdAt) as createdAt, ads, todayAds FROM myb_data  ORDER BY ID DESC LIMIT 1;";
         db.all(sql, (err, results) => {
             if (err) reject(err);
             resolve(results[0]);

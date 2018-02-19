@@ -3,7 +3,7 @@ var db = new sqlite3.Database("../db/mmi.db");
 
 db.serialize(function() {
     db.run(
-        "CREATE TABLE if not exists myb_data (id integer primary key, countOrders integer default NULL, countUsers integer default NULL, prodEvents integer default 0, avgCart integer default NULL, va integer default NULL, createdAt datetime DEFAULT CURRENT_TIMESTAMP, todayOrders integer default 0, todayUsers integer default 0, ads integer default 0);"
+        "CREATE TABLE if not exists myb_data (id integer primary key, countOrders integer default NULL, countUsers integer default NULL, totalEvents integer default 0, prodEvents integer default 0, avgCart integer default NULL, va integer default NULL, createdAt datetime DEFAULT CURRENT_TIMESTAMP, todayOrders integer default 0, todayUsers integer default 0, ads integer default 0, todayAds integer default 0);"
     );
 });
 

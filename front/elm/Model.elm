@@ -63,8 +63,10 @@ type alias MybData =
     , va : Int
     , countUsers : Int
     , todayUsers : Int
+    , totalEvents : Int
     , prodEvents : Int
     , ads : Int
+    , todayAds : Int
     }
 
 
@@ -174,8 +176,10 @@ fetchMybData =
                 |> with (field "va" [] int)
                 |> with (field "countUsers" [] int)
                 |> with (field "todayUsers" [] int)
+                |> with (field "totalEvents" [] int)
                 |> with (field "prodEvents" [] int)
                 |> with (field "ads" [] int)
+                |> with (field "todayAds" [] int)
             )
         )
         |> queryDocument
