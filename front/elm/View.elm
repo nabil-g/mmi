@@ -115,7 +115,7 @@ viewCountsMybData data =
                     ]
             , el Border [ vary Left True, width <| percent 50, center ] <|
                 column None
-                    [ spacing 50 ]
+                    [ spacing 50, paddingLeft 50 ]
                     [ viewProdEvents data
                     , viewAds data
                     ]
