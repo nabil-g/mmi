@@ -64,6 +64,7 @@ type alias MybData =
     , countUsers : Int
     , todayUsers : Int
     , prodEvents : Int
+    , ads : Int
     }
 
 
@@ -143,12 +144,14 @@ update msg model =
 fetchWeather : Cmd Msg
 fetchWeather =
     Http.get "http://54.36.52.224:42425/forecast/45.7701213,4.829064300000027?lang=fr&units=si&exclude=minutely,alerts,flags" decodeWeather
+        -- Http.get "http://localhost:42425/forecast/45.7701213,4.829064300000027?lang=fr&units=si&exclude=minutely,alerts,flags" decodeWeather
         |> Http.send ReceiveWeather
 
 
 fetchLastTweet : Cmd Msg
 fetchLastTweet =
     Http.get "http://54.36.52.224:42425/last_tweet" decodeTweets
+        -- Http.get "http://localhost:42425/last_tweet" decodeTweets
         |> Http.send ReceiveTweets
 
 
@@ -172,6 +175,7 @@ fetchMybData =
                 |> with (field "countUsers" [] int)
                 |> with (field "todayUsers" [] int)
                 |> with (field "prodEvents" [] int)
+                |> with (field "ads" [] int)
             )
         )
         |> queryDocument
@@ -181,6 +185,10 @@ fetchMybData =
 sendQueryRequest : Request Query a -> Task GraphQLClient.Error a
 sendQueryRequest request =
     GraphQLClient.sendQuery "http://54.36.52.224:42425/graphql" request
+
+
+
+-- GraphQLClient.sendQuery "http://localhost:42425/graphql" request
 
 
 decodeWeather : D.Decoder Weather

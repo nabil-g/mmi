@@ -3,6 +3,7 @@ module Styles exposing (..)
 import Style as S
 import Style.Color as SC
 import Style.Font as SF
+import Style.Border as SB
 import Color
 import Element as E
 
@@ -11,6 +12,7 @@ type Styles
     = None
     | Layout
     | WeatherIcon
+    | Border
 
 
 type Variations
@@ -19,6 +21,7 @@ type Variations
     | Largest
     | Bold
     | Light
+    | Left
 
 
 stylesheet : Bool -> S.StyleSheet Styles Variations
@@ -67,6 +70,11 @@ stylesheet isBigPortrait =
             [ S.prop "width" "220px"
             , S.prop "height" "220px"
             , S.prop "margin" "-40px"
+            ]
+        , S.style Border
+            [ SC.border Color.white
+            , SB.solid
+            , S.variation Left [ SB.left 1 ]
             ]
         ]
 

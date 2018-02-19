@@ -8,7 +8,7 @@ const graphqlHTTP = require("express-graphql");
 const schema = require("./schema.js");
 var request = require("request");
 
-var whitelist = ["http://localhost:3002", "http://54.36.52.224:42424"];
+var whitelist = ["http://localhost:42424", "http://54.36.52.224:42424"];
 var corsOptions = {
     origin: function(origin, callback) {
         var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
@@ -42,6 +42,12 @@ app.post("/mmi", function(req, res, next) {
         var result = getLastData()
             .then(function(lastRow) {
                 handleNewOrder(params, lastRow);
+            })
+            .catch(e => console.log(e));
+    } else if (params.new_ad) {
+        var result = getLastData()
+            .then(function(lastRow) {
+                handleNewAd(params, lastRow);
             })
             .catch(e => console.log(e));
     }
@@ -129,6 +135,7 @@ function handleNewUser(params, lastRow) {
         newData.prodEvents = lastRow.prodEvents;
         newData.va = lastRow.va;
         newData.avgCart = lastRow.avgCart;
+        newData.ads = lastRow.ads;
         newData.todayUsers = 1;
         insertNewData(newData);
     } else {
@@ -155,10 +162,34 @@ function handleNewOrder(params, lastRow) {
         // no insertion yet for today
         newData.countUsers = lastRow.countUsers;
         newData.prodEvents = lastRow.prodEvents;
+        newData.ads = lastRow.ads;
         newData.todayOrders = 1;
         insertNewData(newData);
     } else {
         newData.todayOrders = lastRow.todayOrders + 1;
+        updateTodayData(newData, lastRow.id);
+    }
+}
+
+function handleNewAd(params, lastRow) {
+    var newAds = lastRow.ads + 1;
+    var newData = {
+        ads: newAds,
+    };
+
+    var today = new Date().setHours(0, 0, 0, 0);
+    var lastRowDate = new Date(lastRow.createdAt).setHours(0, 0, 0, 0);
+
+    if (lastRowDate < today) {
+        console.log("no insertion yet for today");
+        // no insertion yet for today
+        newData.countUsers = lastRow.countUsers;
+        newData.prodEvents = lastRow.prodEvents;
+        newData.countOrders = lastRow.countOrders;
+        newData.va = lastRow.va;
+        newData.avgCart = lastRow.avgCart;
+        insertNewData(newData);
+    } else {
         updateTodayData(newData, lastRow.id);
     }
 }
@@ -206,7 +237,7 @@ function insertNewData(newData) {
 function getLastData() {
     return new Promise((resolve, reject) => {
         let sql =
-            "SELECT id, countOrders, prodEvents, countUsers, todayOrders, todayUsers, avgCart, va, DATE(createdAt) as createdAt FROM myb_data  ORDER BY ID DESC LIMIT 1;";
+            "SELECT id, countOrders, prodEvents, countUsers, todayOrders, todayUsers, avgCart, va, DATE(createdAt) as createdAt, ads FROM myb_data  ORDER BY ID DESC LIMIT 1;";
         db.all(sql, (err, results) => {
             if (err) reject(err);
             resolve(results[0]);

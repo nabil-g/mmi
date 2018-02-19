@@ -20,6 +20,7 @@ const MybData = new GraphQLObjectType({
         countUsers: { type: GraphQLInt },
         todayUsers: { type: GraphQLInt },
         prodEvents: { type: GraphQLInt },
+        ads: { type: GraphQLInt },
     }),
 });
 

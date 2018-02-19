@@ -23,6 +23,7 @@ var commonConfig = {
         path: outputPath,
         filename: outputFilename,
         publicPath: "http://54.36.52.224:42424/",
+        // publicPath: "http://localhost:42424/",
     },
 
     resolve: {
@@ -59,6 +60,7 @@ if (TARGET_ENV === "development") {
 
     module.exports = merge(commonConfig, {
         entry: ["webpack-dev-server/client?http://54.36.52.224:42424", entryPath],
+        // entry: ["webpack-dev-server/client?http://localhost:42424", entryPath],
 
         devServer: {
             // serve index.html in place of 404 responses
