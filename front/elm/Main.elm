@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (programWithFlags)
-import Time exposing (Time, second, minute)
+import Time exposing (Time, second, minute, hour)
 import Task
 import RemoteData exposing (RemoteData(..))
 import View exposing (view)
@@ -60,4 +60,5 @@ subscriptions model =
         , Time.every minute UpdateDateTime
         , Time.every (15 * minute) <| always FetchWeather
         , Time.every (15 * minute) <| always FetchLastTweet
+        , Time.every hour ResetDayDataAtMidnight
         ]

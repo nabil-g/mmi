@@ -119,6 +119,14 @@ app.get("/last_tweet", function(req, res, next) {
     );
 });
 
+app.get("/reset_day", function(req, res, next) {
+    var result = getLastData()
+        .then(function(lastRow) {
+            resetDayData(lastRow);
+        })
+        .catch(e => console.log(e));
+});
+
 app.listen(42425, function() {
     console.log("Listening on port 42425!");
 });
@@ -262,6 +270,16 @@ function insertNewData(newData) {
         if (err) console.log("err", err);
         console.log("New today data inserted");
     });
+}
+
+function resetDayData(yesterdayData) {
+    delete yesterdayData.id;
+    delete yesterdayData.createdAt;
+    newData = yesterdayData;
+    newData["todayOrders"] = 0;
+    newData["todayUsers"] = 0;
+    newData["todayAds"] = 0;
+    insertNewData(newData);
 }
 
 function getLastData() {
