@@ -1,16 +1,15 @@
 module Model exposing (..)
 
-import Time exposing (Time, second, minute)
-import Date exposing (Date, fromTime)
-import Task exposing (Task)
-import GraphQL.Request.Builder exposing (..)
-import GraphQL.Client.Http as GraphQLClient
-import RemoteData exposing (RemoteData(..))
-import Json.Decode.Pipeline as P
-import Json.Decode as D
-import Http
+import Date exposing (Date)
 import Element as E
-import Ports exposing (InfoForOutside(..))
+import GraphQL.Client.Http as GraphQLClient
+import GraphQL.Request.Builder exposing (..)
+import Http
+import Json.Decode as D
+import Json.Decode.Pipeline as P
+import RemoteData exposing (RemoteData(..))
+import Task exposing (Task)
+import Time exposing (Time, minute, second)
 
 
 type alias Model =
@@ -83,79 +82,6 @@ type Msg
     | FetchLastTweet
     | ReceiveWeather (Result Http.Error Weather)
     | ReceiveTweets (Result Http.Error (List Tweet))
-    | ResetDayDataAtMidnight Time
-    | ResetDayDataResponse (Result Http.Error Bool)
-
-
-
--- UPDATE
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        NoOp ->
-            model ! []
-
-        FetchMybData ->
-            model ! [ fetchMybDataCmd ]
-
-        UpdateDateTime time ->
-            { model | datetime = Just <| fromTime time } ! []
-
-        ReceiveQueryResponse response ->
-            let
-                cmd =
-                    case ( response, model.mybData ) of
-                        ( Success newData, Success currentData ) ->
-                            if newData.countOrders > currentData.countOrders then
-                                Ports.sendInfoOutside PlayCashRegister
-                            else
-                                Cmd.none
-
-                        ( _, _ ) ->
-                            Cmd.none
-            in
-                { model | mybData = response } ! [ cmd ]
-
-        FetchWeather ->
-            model ! [ fetchWeather ]
-
-        FetchLastTweet ->
-            model ! [ fetchLastTweet ]
-
-        ReceiveWeather response ->
-            case response of
-                Ok w ->
-                    { model | weather = { currently = w.currently } } ! []
-
-                Err e ->
-                    Debug.log "ERROR when fetching weather"
-                        model
-                        ! []
-
-        ReceiveTweets response ->
-            case response of
-                Ok tweets ->
-                    { model | lastTweet = List.head tweets } ! []
-
-                Err e ->
-                    Debug.log ("ERROR when fetching last tweet" ++ toString e)
-                        model
-                        ! []
-
-        ResetDayDataAtMidnight time ->
-            let
-                cmd =
-                    if Date.hour (fromTime time) == 1 then
-                        resetDayData
-                    else
-                        Cmd.none
-            in
-                model ! [ cmd ]
-
-        ResetDayDataResponse response ->
-            model ! []
 
 
 fetchWeather : Cmd Msg
@@ -199,13 +125,6 @@ fetchMybData =
         )
         |> queryDocument
         |> request {}
-
-
-resetDayData : Cmd Msg
-resetDayData =
-    Http.get "http://54.36.52.224:42425/reset_day" D.bool
-        -- Http.get "http://localhost:42425/reset_day" D.bool
-        |> Http.send ResetDayDataResponse
 
 
 sendQueryRequest : Request Query a -> Task GraphQLClient.Error a
@@ -253,16 +172,16 @@ decodeTweetText =
                     ind =
                         String.indexes "http" s
                 in
-                    case List.head (List.reverse ind) of
-                        Just lastIndex ->
-                            s
-                                |> String.length
-                                |> flip (-) lastIndex
-                                |> flip String.dropRight s
-                                |> D.succeed
+                case List.head (List.reverse ind) of
+                    Just lastIndex ->
+                        s
+                            |> String.length
+                            |> flip (-) lastIndex
+                            |> flip String.dropRight s
+                            |> D.succeed
 
-                        _ ->
-                            D.succeed s
+                    _ ->
+                        D.succeed s
             )
 
 

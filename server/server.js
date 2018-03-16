@@ -7,6 +7,7 @@ const { buildSchema } = require("graphql");
 const graphqlHTTP = require("express-graphql");
 const schema = require("./schema.js");
 var request = require("request");
+var schedule = require("node-schedule");
 
 var whitelist = ["http://localhost:42424", "http://54.36.52.224:42424"];
 var corsOptions = {
@@ -117,14 +118,6 @@ app.get("/last_tweet", function(req, res, next) {
             }
         }
     );
-});
-
-app.get("/reset_day", function(req, res, next) {
-    var result = getLastData()
-        .then(function(lastRow) {
-            resetDayData(lastRow);
-        })
-        .catch(e => console.log(e));
 });
 
 app.listen(42425, function() {
@@ -287,8 +280,22 @@ function getLastData() {
         let sql =
             "SELECT id, countOrders, totalEvents, prodEvents, countUsers, todayOrders, todayUsers, avgCart, va, DATE(createdAt) as createdAt, ads, todayAds FROM myb_data  ORDER BY ID DESC LIMIT 1;";
         db.all(sql, (err, results) => {
-            if (err) reject(err);
+            if (err) {
+                console.log(err);
+                reject(err);
+            }
             resolve(results[0]);
         });
     });
 }
+
+// SCHEDULE
+
+var j = schedule.scheduleJob("0  0 * * *", function() {
+    console.log("Resetting day data");
+    var result = getLastData()
+        .then(function(lastRow) {
+            resetDayData(lastRow);
+        })
+        .catch(e => console.log(e));
+});

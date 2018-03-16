@@ -1,12 +1,13 @@
 module Main exposing (..)
 
-import Html exposing (programWithFlags)
-import Time exposing (Time, second, minute, hour)
-import Task
-import RemoteData exposing (RemoteData(..))
-import View exposing (view)
-import Model exposing (..)
 import Element as E
+import Html exposing (programWithFlags)
+import Model exposing (..)
+import RemoteData exposing (RemoteData(..))
+import Task
+import Time exposing (Time, hour, minute, second)
+import Update exposing (update)
+import View exposing (view)
 
 
 main : Program Flags Model Msg
@@ -31,13 +32,13 @@ init flags =
         newDevice =
             E.classifyDevice { width = flags.width, height = flags.height }
     in
-        { mybData = NotAsked
-        , datetime = Nothing
-        , weather = initialWeather
-        , lastTweet = Nothing
-        , device = newDevice
-        }
-            ! [ fetchMybDataCmd, Task.perform UpdateDateTime Time.now, fetchWeather, fetchLastTweet ]
+    { mybData = NotAsked
+    , datetime = Nothing
+    , weather = initialWeather
+    , lastTweet = Nothing
+    , device = newDevice
+    }
+        ! [ fetchMybDataCmd, Task.perform UpdateDateTime Time.now, fetchWeather, fetchLastTweet ]
 
 
 initialWeather : Weather
@@ -60,5 +61,4 @@ subscriptions model =
         , Time.every minute UpdateDateTime
         , Time.every (15 * minute) <| always FetchWeather
         , Time.every (15 * minute) <| always FetchLastTweet
-        , Time.every hour ResetDayDataAtMidnight
         ]
